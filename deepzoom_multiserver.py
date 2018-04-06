@@ -84,7 +84,7 @@ class _Directory(object):
     def __init__(self, basedir, relpath=''):
         self.name = os.path.basename(relpath)
         self.children = []
-        with open('static/gmu-intermediate-slide.csv', 'rb') as csvfile:
+        with open('static/gmu-intermediate-slide.csv', 'r') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             for row in reader:
                 self.children.append(_SlideFile(row))

@@ -30,6 +30,7 @@ CMD ["python", "deepzoom_multiserver.py", "-p", "80", "-l", "0.0.0.0", "/slides"
 # sudo service docker start
 #
 # mkdir /home/ec2-user/slides
+# mkfs -t ext4 /dev/sdf
 # mount /dev/xvdf /home/ec2-user/slides
 
 # docker run -p 80:80 -v /home/ec2-user/slides/:/slides:z docker.io/cmakinen/coral-vm:0.1 &
