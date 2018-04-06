@@ -27,6 +27,7 @@ from openslide.deepzoom import DeepZoomGenerator
 import os
 from optparse import OptionParser
 from threading import Lock
+import csv
 
 SLIDE_DIR = '.'
 SLIDE_CACHE_SIZE = 10
@@ -83,22 +84,31 @@ class _Directory(object):
     def __init__(self, basedir, relpath=''):
         self.name = os.path.basename(relpath)
         self.children = []
-        for name in sorted(os.listdir(os.path.join(basedir, relpath))):
-            cur_relpath = os.path.join(relpath, name)
-            cur_path = os.path.join(basedir, cur_relpath)
-            if os.path.isdir(cur_path):
-                cur_dir = _Directory(basedir, cur_relpath)
-                if cur_dir.children:
-                    self.children.append(cur_dir)
-            elif OpenSlide.detect_format(cur_path):
-                self.children.append(_SlideFile(cur_relpath))
-
+        with open('static/gmu-intermediate-slide.csv', 'rb') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            for row in reader:
+                self.children.append(_SlideFile(row))
 
 class _SlideFile(object):
-    def __init__(self, relpath):
-        self.name = os.path.basename(relpath)
-        self.url_path = relpath
+    def __init__(self, row):
+        self.name = row[9]
+        self.slide_number = row[8].decode("utf8")
+        self.slide_description = row[6].decode("utf8")
+        self.stain = row[10].decode("utf8")
+        self.source = row[2].decode("utf8")
+        self.contributor = row[3].decode("utf8")
+        self.accession_number = row[13].decode("utf8")
+        self.processing = row[14].decode("utf8")
+        self.comments = row[15].decode("utf8")
+        self.date_sent_to_aperio = row[16].decode("utf8")
+        self.sample = row[17].decode("utf8")
+        self.infect = row[18].decode("utf8")
+        self.study = row[19].decode("utf8")
+        self.collection_site = row[20].decode("utf8")
+        self.histopath_desc = row[21].decode("utf8")
+        self.attachment = "N/A"
 
+        self.url_path = row[9].decode("utf8")
 
 @app.before_first_request
 def _setup():

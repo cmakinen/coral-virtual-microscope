@@ -26,10 +26,10 @@ CMD ["python", "deepzoom_multiserver.py", "-p", "80", "-l", "0.0.0.0", "/slides"
 ###only on rhel... amzlinux doesn't need this
 ####### sudo yum install yum-utils
 ####### sudo yum-config-manager --enable rhui-REGION-rhel-server-extras
-# sudo yum install docker
+# sudo yum install docker -y
 # sudo service docker start
 #
 # mkdir /home/ec2-user/slides
 # mount /dev/xvdf /home/ec2-user/slides
 
-# docker run -m 500MB  -p 80:80 -v /home/ec2-user/slides/:/slides:z cmakinen/coral-vm:0.1
+# docker run -p 80:80 -v /home/ec2-user/slides/:/slides:z docker.io/cmakinen/coral-vm:0.1 &
