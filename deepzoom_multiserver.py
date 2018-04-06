@@ -85,7 +85,7 @@ class _Directory(object):
         self.name = os.path.basename(relpath)
         self.children = []
         with open('static/gmu-intermediate-slide.csv', 'r') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+            reader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
             for row in reader:
                 self.children.append(_SlideFile(row))
 
@@ -94,18 +94,20 @@ class _SlideFile(object):
         self.name = row[9]
         self.slide_number = row[8]
         self.slide_description = row[6]
+        self.genus = row[4]
+        self.species= row[5]
         self.stain = row[10]
         self.source = row[2]
         self.contributor = row[3]
-        self.accession_number = row[13]
-        self.processing = row[14]
-        self.comments = row[15]
+        self.accession_number = row[12]
+        self.processing = row[13]
+        self.comments = row[14]
         self.date_sent_to_aperio = row[16]
-        self.sample = row[17]
-        self.infect = row[18]
-        self.study = row[19]
-        self.collection_site = row[20]
-        self.histopath_desc = row[21]
+        self.sample = row[15]
+        self.infect = row[16]
+        self.study = row[17]
+        self.collection_site = row[18]
+        self.histopath_desc = row[19]
         self.attachment = "N/A"
 
         self.url_path = row[9]
