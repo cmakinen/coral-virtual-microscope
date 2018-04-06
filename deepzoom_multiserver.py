@@ -92,23 +92,23 @@ class _Directory(object):
 class _SlideFile(object):
     def __init__(self, row):
         self.name = row[9]
-        self.slide_number = row[8].decode("utf8")
-        self.slide_description = row[6].decode("utf8")
-        self.stain = row[10].decode("utf8")
-        self.source = row[2].decode("utf8")
-        self.contributor = row[3].decode("utf8")
-        self.accession_number = row[13].decode("utf8")
-        self.processing = row[14].decode("utf8")
-        self.comments = row[15].decode("utf8")
-        self.date_sent_to_aperio = row[16].decode("utf8")
-        self.sample = row[17].decode("utf8")
-        self.infect = row[18].decode("utf8")
-        self.study = row[19].decode("utf8")
-        self.collection_site = row[20].decode("utf8")
-        self.histopath_desc = row[21].decode("utf8")
+        self.slide_number = row[8]
+        self.slide_description = row[6]
+        self.stain = row[10]
+        self.source = row[2]
+        self.contributor = row[3]
+        self.accession_number = row[13]
+        self.processing = row[14]
+        self.comments = row[15]
+        self.date_sent_to_aperio = row[16]
+        self.sample = row[17]
+        self.infect = row[18]
+        self.study = row[19]
+        self.collection_site = row[20]
+        self.histopath_desc = row[21]
         self.attachment = "N/A"
 
-        self.url_path = row[9].decode("utf8")
+        self.url_path = row[9]
 
 @app.before_first_request
 def _setup():
