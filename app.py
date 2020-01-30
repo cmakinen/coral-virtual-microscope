@@ -42,6 +42,7 @@ DEEPZOOM_TILE_QUALITY = 75
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('DEEPZOOM_MULTISERVER_SETTINGS', silent=True)
+# app.config.update(dict(DEBUG=True,))
 
 # conn = sqlite3.connect('slides.db')
 # c = conn.cursor()
@@ -227,7 +228,7 @@ def search():
             i = i + 1
         slides.append(slide)
 
-    print(json.dumps({'slides': slides}))
+    # print(json.dumps({'slides': slides}))
     conn.commit()
     conn.close()
 

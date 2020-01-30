@@ -1,16 +1,13 @@
-<!doctype html>
-<title>Available Slides</title>
+<!DOCTYPE html>
+<html lang="en" >
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <title>CodePen - Simple Sidebar Bootstrap</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="/static/style.css">
     <script>
 			function liveSearch(value){
 				value = value.trim(); // remove any spaces around the text
-				if(value != ""){ // don't make requests with an empty string
 					$.ajax({
 						url: "search",
 						data: {searchText: value},
@@ -43,86 +40,124 @@
 						}
 
 					});
-				}
-				else{
-					$("#results").html(""); // set the results empty in case of empty string
-				}
 			}
 		</script>
 </head>
-<style type="text/css">
-li {
-    list-style-type: none;
-    margin: 0.4em 0;
-}
-li.none {
-    font-style: italic;
-}
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-  background-color: #addeb2;
-}
-</style>
-    <input type="text" onkeyup="liveSearch(this.value)"> <!-- Assigns the key up event to call the liveSearch() function -->
-    <br>
-    <div id="results"></div> <!-- Results will be printed here -->
-    <table border="1px" id="slideTable" class="table table-striped table-hover">
-        <thead>
-        <tr >
-            <th scope="col">Slide Filename</th>
-            <th scope="col">Slide Number</th>
-            <th scope="col">Genus</th>
-            <th scope="col">Species</th>
-            <th scope="col">Stain</th>
-            <th scope="col">Source</th>
-            <th scope="col">Contributor</th>
-            <th scope="col">Processing</th>
-            <th scope="col">Comments</th>
-            <th scope="col">Date Sent to Aperio</th>
-            <th scope="col">Infect/Non</th>
-            <th scope="col">Collection Site</th>
-            <th scope="col">Histopathologic Description</th>
-            <th scope="col">Attachment</th>
+<body>
+<!-- partial:index.partial.html -->
+<div id="wrapper">
 
-        </tr>
-        </thead>
-    {% for entry in root_dir.children recursive %}
-            <tr>
-                <th scope="row">
-            {% if entry.url_path %}
-                <a href="{{ url_for('slide', path=entry.url_path) }}">
-                    {{ entry.name }}
-                </a>
-                <td>{{ entry.slide_number }} </td>
-                <td>{{ entry.genus }} </td>
-                <td>{{ entry.species }} </td>
-                <td>{{ entry.stain }} </td>
-                <td>{{ entry.source }} </td>
-                <td>{{ entry.contributor }} </td>
-                <td>{{ entry.processing }} </td>
-                <td>{{ entry.comments }} </td>
-                <td>{{ entry.date_sent_to_aperio }} </td>
-                <td>{{ entry.infect }} </td>
-                <td>{{ entry.collection_site }} </td>
-                <td>{{ entry.histopath_description }} </td>
-                <td>{{ entry.attachment }} </td>
-            {% else %}
-                {{ entry.name }}
-            {% endif %}
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Coral Virtual Microscope
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#">Shortcuts</a>
+                </li>
+                <li>
+                    <a href="#">Overview</a>
+                </li>
+                <li>
+                    <a href="#">Events</a>
+                </li>
+                <li>
+                    <a href="#">About</a>
+                </li>
+                <li>
+                    <a href="#">Services</a>
+                </li>
+                <li>
+                    <a href="#">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
 
-            {% if entry.children %}
-                <ul>
-                    {{ loop(entry.children) }}
-                </ul>
-            {% endif %}
-                </th>
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid scrolling-wrapper">
+                <a href="#menu-toggle" class="glyphicon glyphicon-align-justify" id="menu-toggle"></a>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <input type="text" onkeyup="liveSearch(this.value)" class="top-buffer col-xs-5 col-sm-5 col-md-5 col-lg-5" placeholder="Slide Search">
+                        <br><br><br><br>
+                        <div id="results"></div> <!-- Results will be printed here -->
+                        <table border="1px" id="slideTable" class="table table-striped table-hover">
+                            <thead>
+                            <tr >
+                                <th scope="col">Slide Filename</th>
+                                <th scope="col">Slide Number</th>
+                                <th scope="col">Genus</th>
+                                <th scope="col">Species</th>
+                                <th scope="col">Stain</th>
+                                <th scope="col">Source</th>
+                                <th scope="col">Contributor</th>
+                                <th scope="col">Processing</th>
+                                <th scope="col">Comments</th>
+                                <th scope="col">Date Sent to Aperio</th>
+                                <th scope="col">Infect/Non</th>
+                                <th scope="col">Collection Site</th>
+                                <th scope="col">Histopathologic Description</th>
+                                <th scope="col">Attachment</th>
 
-            </tr>
-    {% else %}
-        <li class="none">None</li>
-    {% endfor %}
-    </table>
+                            </tr>
+                            </thead>
+                            {% for entry in root_dir.children recursive %}
+                            <tr>
+                                <th scope="row">
+                                    {% if entry.url_path %}
+                                    <a href="{{ url_for('slide', path=entry.url_path) }}">
+                                        {{ entry.name }}
+                                    </a>
+                                <td>{{ entry.slide_number }} </td>
+                                <td>{{ entry.genus }} </td>
+                                <td>{{ entry.species }} </td>
+                                <td>{{ entry.stain }} </td>
+                                <td>{{ entry.source }} </td>
+                                <td>{{ entry.contributor }} </td>
+                                <td>{{ entry.processing }} </td>
+                                <td>{{ entry.comments }} </td>
+                                <td>{{ entry.date_sent_to_aperio }} </td>
+                                <td>{{ entry.infect }} </td>
+                                <td>{{ entry.collection_site }} </td>
+                                <td>{{ entry.histopath_description }} </td>
+                                <td>{{ entry.attachment }} </td>
+                                {% else %}
+                                {{ entry.name }}
+                                {% endif %}
 
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+                                {% if entry.children %}
+                                <ul>
+                                    {{ loop(entry.children) }}
+                                </ul>
+                                {% endif %}
+                                </th>
+
+                            </tr>
+                            {% else %}
+                            <li class="none">None</li>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+<!-- partial -->
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js'></script>
+<script  src="/static/script.js"></script>
 <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+</body>
+</html>
