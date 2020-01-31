@@ -167,9 +167,17 @@ def _get_slide(path):
     except OpenSlideError:
         abort(404)
 
+@app.route('/slides')
+def slides():
+    return render_template('files.html', root_dir=_Directory(app.basedir))
+
+@app.route('/home')
+def home():
+    return render_template('home.html', root_dir=_Directory(app.basedir))
+
 @app.route('/')
 def index():
-    return render_template('files.html', root_dir=_Directory(app.basedir))
+    return render_template('home.html', root_dir=_Directory(app.basedir))
 
 
 @app.route('/<path:path>')
