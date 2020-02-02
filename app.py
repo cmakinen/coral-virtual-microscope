@@ -186,7 +186,7 @@ def slide(path):
     slide = _get_slide(path)
     print("request slide",slide)
     slide_url = url_for('dzi', path=path)
-    return render_template('slide-fullpage.html', slide_url=slide_url,
+    return render_template('slide-multipane.html', slide_url=slide_url,
             slide_filename=slide.filename, slide_mpp=slide.mpp)
 
 

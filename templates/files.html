@@ -85,7 +85,7 @@
                             <tr>
                                 <th scope="row">
                                     {% if entry.url_path %}
-                                    <a href="{{ url_for('slide', path=entry.url_path) }}">
+                                    <a href="{{ url_for('slide', path=entry.url_path) }}" target="_blank">
                                         {{ entry.name }}
                                     </a>
                                 <td>{{ entry.slide_number }} </td>
