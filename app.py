@@ -27,7 +27,6 @@ from openslide.deepzoom import DeepZoomGenerator
 import os
 from optparse import OptionParser
 from threading import Lock
-import csv
 import json
 import sqlite3
 
@@ -42,20 +41,6 @@ DEEPZOOM_TILE_QUALITY = 75
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('DEEPZOOM_MULTISERVER_SETTINGS', silent=True)
-# app.config.update(dict(DEBUG=True,))
-
-# conn = sqlite3.connect('slides.db')
-# c = conn.cursor()
-# c.execute('''CREATE TABLE slides
-#              (filename text, number text, genus text, species text, stain text, source text, contributor text,
-#              processing text, comments text, date_sent_to_aperio text, infect text, collection_site text,
-#              histopathologic_description text, attachment text)''')
-# conn.commit()
-# conn.close()
-
-# We can also close the connection if we are done with it.
-# Just be sure any changes have been committed or they will be lost.
-# conn.close()
 
 class PILBytesIO(BytesIO):
     def fileno(self):
@@ -99,45 +84,46 @@ class _Directory(object):
     def __init__(self, basedir, relpath=''):
         self.name = os.path.basename(relpath)
         self.children = []
-        # conn = sqlite3.connect('slides.db')
-        # c = conn.cursor()
-        #
-        with open('static/bette.csv', 'r') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
-            for row in reader:
-                self.children.append(_SlideFile(row))
-        #         c.execute("""INSERT INTO slides (filename, number, genus, species, stain,
-        #         source, contributor, processing, comments, date_sent_to_aperio,
-        #         infect, collection_site, histopathologic_description, attachment)
-        #         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-        #                                           (row[5], row[4], row[2], row[3], row[6], row[0],
-        #                                           row[1], row[8], row[9], row[10], row[14], row[16],
-        #                                           row[17], "N/A"))
-        # conn.commit()
-        # conn.close()
+
+        conn = sqlite3.connect('all_slides.db')
+        c = conn.cursor()
+        c.execute("select * from slides")
+        records = c.fetchall()
+        slides = []
+        for row in records:
+            i = 0
+            slide = {}
+            print(c.description)
+            for key in c.description:
+                slide[key[0]] = row[i]
+                i = i + 1
+            self.children.append(_SlideFile(slide))
+
+        conn.close()
+
 
 class _SlideFile(object):
-    def __init__(self, row):
-        self.name = row[5]
-        self.slide_number = row[4]
+    def __init__(self, slide):
+        self.name = slide['filename']
+        self.slide_number = slide['number']
         # self.slide_description = row[4]
-        self.genus = row[2]
-        self.species= row[3]
-        self.stain = row[6]
-        self.source = row[0]
-        self.contributor = row[1]
-        self.accession_number = row[7]
-        self.processing = row[8]
-        self.comments = row[9]
-        self.date_sent_to_aperio = row[10]
-        self.sample = row[13]
-        self.infect = row[14]
-        self.study = row[15]
-        self.collection_site = row[16]
-        self.histopath_description = row[17]
+        self.genus = slide['genus']
+        self.species= slide['species']
+        self.stain = slide['stain']
+        self.source = slide['source']
+        self.contributor = slide['contributor']
+        # self.accession_number = slide['accession_number']
+        self.processing = slide['processing']
+        self.comments = slide['comments']
+        self.date_sent_to_aperio = slide['date_sent_to_aperio']
+        # self.sample = slide['sample']
+        self.infect = slide['infect']
+        # self.study = slide['study']
+        self.collection_site = slide['collection_site']
+        self.histopath_description = slide['histopathologic_description']
         self.attachment = "N/A"
 
-        self.url_path = row[5]
+        self.url_path = slide['filename']
         print(self.url_path)
 
 @app.before_first_request
@@ -224,8 +210,12 @@ def search():
 
     conn = sqlite3.connect('all_slides.db')
     c = conn.cursor()
-    t = ('%'+text+'%',)
-    c.execute("select * from slides where filename LIKE ?", t)
+    qs = '%'+text+'%'
+    t = (qs,qs,qs,qs,qs,qs,qs,qs,qs,)
+    c.execute("""select * from slides where filename LIKE ? OR number LIKE ? OR genus LIKE ? OR species LIKE ?
+                 OR source LIKE ? OR contributor LIKE ? OR comments LIKE ? OR collection_site LIKE ? OR histopathologic_description LIKE ?"""
+              ,t)
+
     records = c.fetchall()
     slides = []
     for row in records:
@@ -236,7 +226,6 @@ def search():
             i = i + 1
         slides.append(slide)
 
-    print(json.dumps({'slides': slides}))
     conn.close()
 
     # return as JSON
