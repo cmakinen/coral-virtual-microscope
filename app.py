@@ -120,7 +120,7 @@ class _SlideFile(object):
         self.infect = slide['infect']
         # self.study = slide['study']
         self.collection_site = slide['collection_site']
-        self.histopath_description = slide['histopathologic_description']
+        self.histopathologic_description = slide['histopathologic_description']
         self.attachment = "N/A"
 
         self.url_path = slide['filename']
