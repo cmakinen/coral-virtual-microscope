@@ -222,7 +222,7 @@ def search():
     print("search request")
     text = request.args['searchText'] # get the text to search for
 
-    conn = sqlite3.connect('slides.db')
+    conn = sqlite3.connect('all_slides.db')
     c = conn.cursor()
     t = ('%'+text+'%',)
     c.execute("select * from slides where filename LIKE ?", t)
@@ -236,8 +236,7 @@ def search():
             i = i + 1
         slides.append(slide)
 
-    # print(json.dumps({'slides': slides}))
-    conn.commit()
+    print(json.dumps({'slides': slides}))
     conn.close()
 
     # return as JSON
