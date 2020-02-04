@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Slide List - Coral Virtual Microscope</title>
-  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/style.css">
     <script>
 			function liveSearch(value){
@@ -41,25 +41,88 @@
 
 					});
 			}
+            function toggleColumnChoice() {
+              var x = document.getElementById("columnChoice");
+              if (x.style.display === "none") {
+                x.style.display = "block";
+              } else {
+                x.style.display = "none";
+              }
+            }
 		</script>
 </head>
 <body>
-<!-- partial:index.partial.html -->
 <div id="wrapper" class="container-fluid">
 
-        <!-- Sidebar -->
     {% include 'sidebar.html' %}
-
-        <!-- /#sidebar-wrapper -->
-
         <!-- Page Content -->
         <div id="page-content-wrapper">
             <div class="container-fluid scrolling-wrapper">
                 <a href="#menu-toggle" class="glyphicon glyphicon-align-justify" id="menu-toggle"></a>
                 <div class="row">
                     <div class="col-lg-12">
-                        <input type="text" onkeyup="liveSearch(this.value)" class="top-buffer col-xs-4 col-sm-4 col-md-4 col-lg-4" placeholder="Slide Search">
-                        <br><br><br><br>
+                        <div class="btn-toolbar mb-3 justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="input-group">
+                                <input type="text" class="form-control" onkeyup="liveSearch(this.value)" placeholder="Slide Search" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                            </div>
+                            <div class="btn-group mr-2" role="group" aria-label="First group">
+                                <button type="button" class="btn btn-secondary" onclick="toggleColumnChoice()">Column Choice</button>
+                            </div>
+                        </div>
+                        <div class="btn-group-toggle"  id="columnChoice">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                                    <label class="form-check-label" for="inlineRadio1">Slide Filename</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                                    <label class="form-check-label" for="inlineRadio2">Slide Number</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio3" value="option3">
+                                    <label class="form-check-label" for="inlineRadio3">Genus</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio4" value="option3">
+                                    <label class="form-check-label" for="inlineRadio4">Species</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio5" value="option3">
+                                    <label class="form-check-label" for="inlineRadio5">Stain</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio6" value="option3">
+                                    <label class="form-check-label" for="inlineRadio6">Source</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio7" value="option3">
+                                    <label class="form-check-label" for="inlineRadio7">Contributor</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio8" value="option3">
+                                    <label class="form-check-label" for="inlineRadio8">Processing</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio9" value="option3">
+                                    <label class="form-check-label" for="inlineRadio9">Comments</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio10" value="option3">
+                                    <label class="form-check-label" for="inlineRadio10">Infect/Non</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio11" value="option3">
+                                    <label class="form-check-label" for="inlineRadio11">Collection Site</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio12" value="option3">
+                                    <label class="form-check-label" for="inlineRadio12">Histopathologic Description</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio13" value="option3">
+                                    <label class="form-check-label" for="inlineRadio13">Attachment</label>
+                                </div>
+                        </div>
                         <div id="results"></div> <!-- Results will be printed here -->
                         <table border="1px" id="slideTable" class="table table-striped table-hover">
                             <thead>
@@ -126,10 +189,10 @@
     </div>
     <!-- /#wrapper -->
 <!-- partial -->
-  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js'></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 <script  src="/static/script.js"></script>
-<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
 
 </body>
 </html>

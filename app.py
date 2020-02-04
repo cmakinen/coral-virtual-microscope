@@ -93,7 +93,6 @@ class _Directory(object):
         for row in records:
             i = 0
             slide = {}
-            print(c.description)
             for key in c.description:
                 slide[key[0]] = row[i]
                 i = i + 1
