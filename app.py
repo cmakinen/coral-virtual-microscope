@@ -19,7 +19,13 @@
 #
 
 from collections import OrderedDict
+import flask
 from flask import Flask, request, abort, make_response, render_template, url_for
+from flask_login import LoginManager, UserMixin, login_required
+from flask_wtf import FlaskForm
+from wtforms import StringField, BooleanField
+from wtforms.validators import DataRequired
+
 from io import BytesIO
 import openslide
 from openslide import OpenSlide, OpenSlideError
@@ -41,6 +47,64 @@ DEEPZOOM_TILE_QUALITY = 75
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('DEEPZOOM_MULTISERVER_SETTINGS', silent=True)
+app.config["SECRET_KEY"] = "ITSASECRET"
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class LoginForm(FlaskForm):
+    email = StringField('email', validators=[DataRequired()])
+    password = StringField('password', validators=[DataRequired()])
+    remember_me = BooleanField('remember_me', default=False)
+
+class User(UserMixin):
+    # proxy for a database of users
+    user_database = {"JohnDoe@jd.com": ("JohnDoe@jd.com", "John"),
+                     "JaneDoe@jd.com": ("JaneDoe@jd.com", "Jane")}
+
+    def __init__(self, email, password):
+        self.email = email
+        self.password = password
+
+    @classmethod
+    def get(cls,email):
+        return cls.user_database.get(email)
+
+@login_manager.user_loader
+def load_user(user_id):
+    #return None if no match
+    return User.get(user_id)
+
+@app.route("/protected/",methods=["GET"])
+@login_required
+def protected():
+    return make_response("Hello Protected World!")
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Here we use a class of some kind to represent and validate our
+    # client-side form data. For example, WTForms is a library that will
+    # handle this for us, and we use a custom LoginForm to validate.
+    form = LoginForm()
+    print("login called")
+    print (request.__dict__)
+    if form.validate_on_submit():
+        print("login called2")
+        # Login and validate the user.
+        # user should be an instance of your `User` class
+        login_user(user)
+        print("logged in successfully")
+
+        flask.flash('Logged in successfully.')
+
+        next = flask.request.args.get('next')
+        # is_safe_url should check if the url is safe for redirects.
+        # See http://flask.pocoo.org/snippets/62/ for an example.
+        if not is_safe_url(next):
+            return flask.abort(400)
+
+        return flask.redirect(next or flask.url_for('index'))
+    return flask.render_template('login.html', form=form)
+
 
 class PILBytesIO(BytesIO):
     def fileno(self):
@@ -89,7 +153,6 @@ class _Directory(object):
         c = conn.cursor()
         c.execute("select * from slides")
         records = c.fetchall()
-        slides = []
         for row in records:
             i = 0
             slide = {}
@@ -123,7 +186,6 @@ class _SlideFile(object):
         self.attachment = "N/A"
 
         self.url_path = slide['filename']
-        print(self.url_path)
 
 @app.before_first_request
 def _setup():
@@ -139,7 +201,6 @@ def _setup():
 
 def _get_slide(path):
     path = os.path.abspath(os.path.join(app.basedir, path))
-    print("The request path is", path)
     if not path.startswith(app.basedir + os.path.sep):
         # Directory traversal
         abort(404)
@@ -167,9 +228,7 @@ def index():
 
 @app.route('/<path:path>')
 def slide(path):
-    print("request url",path)
     slide = _get_slide(path)
-    print("request slide",slide)
     slide_url = url_for('dzi', path=path)
     return render_template('slide-multipane.html', slide_url=slide_url,
             slide_filename=slide.filename, slide_mpp=slide.mpp)
@@ -204,7 +263,6 @@ def tile(path, level, col, row, format):
 
 @app.route("/search")
 def search():
-    print("search request")
     text = request.args['searchText'] # get the text to search for
 
     conn = sqlite3.connect('all_slides.db')
