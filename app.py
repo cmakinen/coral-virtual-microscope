@@ -35,6 +35,7 @@ from optparse import OptionParser
 from threading import Lock
 import json
 import sqlite3
+import urllib
 
 SLIDE_DIR = '.'
 SLIDE_CACHE_SIZE = 10
@@ -230,8 +231,22 @@ def index():
 def slide(path):
     slide = _get_slide(path)
     slide_url = url_for('dzi', path=path)
+
+    conn = sqlite3.connect('all_slides.db')
+    c = conn.cursor()
+    c.execute("select * from slides where filename = ?", (path,))
+    records = c.fetchall()
+    for row in records:
+        i = 0
+        properties = {}
+        for key in c.description:
+            properties[key[0]] = row[i]
+            i = i + 1
+
+    conn.close()
+
     return render_template('slide-multipane.html', slide_url=slide_url,
-            slide_filename=slide.filename, slide_mpp=slide.mpp)
+            slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties)
 
 
 @app.route('/<path:path>.dzi')
