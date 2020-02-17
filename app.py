@@ -35,7 +35,7 @@ from optparse import OptionParser
 from threading import Lock
 import json
 import sqlite3
-import urllib
+from flask_wtf.csrf import CSRFProtect
 
 SLIDE_DIR = '.'
 SLIDE_CACHE_SIZE = 10
@@ -51,6 +51,7 @@ app.config.from_envvar('DEEPZOOM_MULTISERVER_SETTINGS', silent=True)
 app.config["SECRET_KEY"] = "ITSASECRET"
 login_manager = LoginManager()
 login_manager.init_app(app)
+CSRFProtect(app)
 
 class LoginForm(FlaskForm):
     email = StringField('email', validators=[DataRequired()])
