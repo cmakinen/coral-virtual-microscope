@@ -2,7 +2,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <script src="https://kit.fontawesome.com/f9399c1fb9.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -42,9 +42,8 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col ml-2 mt-2"><a href="#menu-toggle ml-5" class="fa fa-bars" id="menu-toggle"></a></div>
-    {% if false %}
+    <nav id="sidebar" class="">
+        {% if false %}
         <div class="dropdown">
             <button class="btn btn-primary-outline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 John Doe
@@ -54,51 +53,58 @@
                 <a class="dropdown-item" href="#">Sign Out</a>
             </div>
         </div>
-    {% else %}
-    <div class="mr-2 mt-2"><a href="" class="btn btn-secondary btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Login</a></div>
-    {% endif %}
+        {% else %}
+        <div class="mr-2 mt-2"><a href="" class="btn btn-secondary btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Login</a></div>
+        {% endif %}
+        <div class="custom-menu">
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                <i class="fa fa-bars"></i>
+                <span class="sr-only">Toggle Menu</span>
+            </button>
+        </div>
+        <div class="p-4">
+            <h1><a href="index.html" class="logo">Flash</a></h1>
+            <ul class="list-unstyled components mb-5">
+                <li class="active">
+                    <a href="/home"><span class="fa fa-home mr-3"></span> Home</a>
+                </li>
+                <li>
+                    <a href="/slides"><span class="fa fa-user mr-3"></span> Slides</a>
+                </li>
+                <li>
+                    <a href="#"><span class="fa fa-briefcase mr-3"></span> Portfolio</a>
+                </li>
+                <li>
+                    <a href="#"><span class="fa fa-sticky-note mr-3"></span> Blog</a>
+                </li>
+                <li>
+                    <a href="#"><span class="fa fa-paper-plane mr-3"></span> Contact</a>
+                </li>
+            </ul>
 
-    <div id="sidebar-wrapper" style="display: inline">
+            <div class="mb-5">
+                <h3 class="h6 mb-3">Subscribe for newsletter</h3>
+                <form action="#" class="subscribe-form">
+                    <div class="form-group d-flex">
+                        <div class="icon"><span class="icon-paper-plane"></span></div>
+                        <input type="text" class="form-control" placeholder="Enter Email Address">
+                    </div>
+                </form>
+            </div>
 
-        <ul class="sidebar-nav">
-            <li class="sidebar-brand">
-                <a href="#">
-                    Coral Virtual Microscope
-                </a>
-            </li>
-            <li>
-                <a href="/home">Home</a>
-            </li>
-            <li>
-                <a href="/slides">Slides</a>
-            </li>
-            <li>
-                <a href="#">Overview</a>
-            </li>
-            <li>
-                <a href="#">Events</a>
-            </li>
-            <li>
-                <a href="#">Upload Slides</a>
-            </li>
-            <li>
-                <a href="#">About</a>
-            </li>
-            <li>
-                <a href="#">Contact</a>
-            </li>
-        </ul>
-    </div>
-</div>
+            <div class="footer">
+                <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib.com</a>
+                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+            </div>
 
-        <span style="display: inline">
-        </span>
-    <!--<span>-->
+        </div>
+    </nav>
 
-        <!--</span>-->
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-<script src="/static/script.js"></script>
+    <span style="display: inline"></span>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="/static/js/main.js"></script>
 </body>
 </html>
