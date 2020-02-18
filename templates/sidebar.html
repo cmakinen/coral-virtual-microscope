@@ -16,7 +16,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="form-signin" method="POST" action="/login">
+            <form class="form-signin" method="POST" action="/login?next={{ url_for(request.endpoint) }}">
                 <div class="modal-body mx-3">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="md-form mb-5 input-group">
@@ -43,14 +43,14 @@
     </div>
 </div>
     <nav id="sidebar" class="">
-        {% if false %}
+        {% if current_user.is_authenticated %}
         <div class="dropdown">
             <button class="btn btn-primary-outline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                John Doe
+                {{ current_user.get_id() }}
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#">Profile</a>
-                <a class="dropdown-item" href="#">Sign Out</a>
+                <a class="dropdown-item" href="/logout">Sign Out</a>
             </div>
         </div>
         {% else %}

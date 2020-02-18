@@ -20,11 +20,12 @@
 
 from collections import OrderedDict
 import flask
-from flask import Flask, request, abort, make_response, render_template, url_for
-from flask_login import LoginManager, UserMixin, login_required
+from flask import Flask, request, abort, make_response, render_template, url_for, redirect
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
+from is_safe_url import is_safe_url
 
 from io import BytesIO
 import openslide
@@ -58,18 +59,31 @@ class LoginForm(FlaskForm):
     password = StringField('password', validators=[DataRequired()])
     remember_me = BooleanField('remember_me', default=False)
 
-class User(UserMixin):
+class User():
     # proxy for a database of users
-    user_database = {"JohnDoe@jd.com": ("JohnDoe@jd.com", "John"),
-                     "JaneDoe@jd.com": ("JaneDoe@jd.com", "Jane")}
-
     def __init__(self, email, password):
         self.email = email
         self.password = password
 
+    # Flask-Login integration
+    def is_authenticated(self):
+        return True
+
+    def is_active(self): # line 37
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.email
+
     @classmethod
     def get(cls,email):
-        return cls.user_database.get(email)
+        return user_database.get(email)
+
+user_database = {"JohnDoe@jd.com": User("JohnDoe@jd.com", "John"),
+                 "JaneDoe@jd.com": User("JaneDoe@jd.com", "Jane")}
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -81,32 +95,34 @@ def load_user(user_id):
 def protected():
     return make_response("Hello Protected World!")
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
     # Here we use a class of some kind to represent and validate our
     # client-side form data. For example, WTForms is a library that will
     # handle this for us, and we use a custom LoginForm to validate.
     form = LoginForm()
-    print("login called")
-    print (request.__dict__)
     if form.validate_on_submit():
         print("login called2")
         # Login and validate the user.
         # user should be an instance of your `User` class
+        user = load_user(request.form['email'])
         login_user(user)
-        print("logged in successfully")
-
         flask.flash('Logged in successfully.')
 
         next = flask.request.args.get('next')
         # is_safe_url should check if the url is safe for redirects.
         # See http://flask.pocoo.org/snippets/62/ for an example.
-        if not is_safe_url(next):
+        if not is_safe_url(next, {"localhost"}):
             return flask.abort(400)
 
         return flask.redirect(next or flask.url_for('index'))
-    return flask.render_template('login.html', form=form)
+    return redirect(flask.request.environ["HTTP_REFERER"])
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(flask.request.environ["HTTP_REFERER"])
 
 class PILBytesIO(BytesIO):
     def fileno(self):
