@@ -128,6 +128,12 @@ $(document).ready(function() {
         minZoomLevel: 1,
         visibilityRatio: 1,
         zoomPerScroll: 2,
+        showRotationControl: true,
+        gestureSettingsTouch: {
+            pinchRotate: true
+        },
+        showNavigator: true,
+        navigatorPosition: "TOP_RIGHT"
     });
     viewer.addHandler("open", function() {
         // To improve load times, ignore the lowest-resolution Deep Zoom
