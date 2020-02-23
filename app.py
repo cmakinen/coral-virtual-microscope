@@ -163,13 +163,20 @@ class _SlideCache(object):
 
 
 class _Directory(object):
-    def __init__(self, basedir, relpath=''):
+    def __init__(self, basedir, relpath='', searchString=''):
         self.name = os.path.basename(relpath)
         self.children = []
-
         conn = sqlite3.connect('all_slides.db')
         c = conn.cursor()
-        c.execute("select * from slides")
+
+        if searchString:
+            qs = '%'+searchString+'%'
+            t = (qs,qs,qs,qs,qs,qs,qs,qs,qs,)
+            c.execute("""select * from slides where filename LIKE ? OR number LIKE ? OR genus LIKE ? OR species LIKE ?
+                 OR source LIKE ? OR contributor LIKE ? OR comments LIKE ? OR collection_site LIKE ? OR histopathologic_description LIKE ?"""
+                    ,t)
+        else:
+            c.execute("select * from slides")
         records = c.fetchall()
         for row in records:
             i = 0
@@ -233,15 +240,18 @@ def _get_slide(path):
 
 @app.route('/slides')
 def slides():
-    return render_template('files.html', root_dir=_Directory(app.basedir))
+    searchString = request.args.get('searchString')
+    if (searchString):
+        return render_template('files.html', root_dir=_Directory(app.basedir, searchString=searchString), search_string=searchString)
+    return render_template('files.html', root_dir=_Directory(app.basedir), search_string=searchString)
 
 @app.route('/home')
 def home():
-    return render_template('home.html', root_dir=_Directory(app.basedir))
+    return render_template('home.html')
 
 @app.route('/')
 def index():
-    return render_template('home.html', root_dir=_Directory(app.basedir))
+    return render_template('home.html')
 
 
 @app.route('/<path:path>')
@@ -265,8 +275,31 @@ def slide(path):
     return render_template('slide-fullpage.html', slide_url=slide_url,
             slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties)
 
+@app.route('/full/<path:path>')
+def slide_full(path):
+    print(path)
+    slide = _get_slide(path)
+    slide_url = url_for('dzi', path=path)
+
+    conn = sqlite3.connect('all_slides.db')
+    c = conn.cursor()
+    c.execute("select * from slides where filename = ?", (path,))
+    records = c.fetchall()
+    for row in records:
+        i = 0
+        properties = {}
+        for key in c.description:
+            properties[key[0]] = row[i]
+            i = i + 1
+
+    conn.close()
+
+    return render_template('slide-multipane.html', slide_url=slide_url,
+                           slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties)
+
 
 @app.route('/<path:path>.dzi')
+@app.route('/full/<path:path>.dzi')
 def dzi(path):
     slide = _get_slide(path)
     format = app.config['DEEPZOOM_FORMAT']
@@ -276,6 +309,7 @@ def dzi(path):
 
 
 @app.route('/<path:path>_files/<int:level>/<int:col>_<int:row>.<format>')
+@app.route('/full/<path:path>_files/<int:level>/<int:col>_<int:row>.<format>')
 def tile(path, level, col, row, format):
     slide = _get_slide(path)
     format = format.lower()

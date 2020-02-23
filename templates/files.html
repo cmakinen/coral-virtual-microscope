@@ -17,7 +17,8 @@
                                     for (i = 0; i < element.length; i++) {
                                         $("#slideTable tbody").append(
                                               "<tr>" +
-                                                    "<td><b><a class='slide_view' href='#' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a></b></td>" +
+                                                    "<td><a class='slide_view' href='#' search-string='"+value+"' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a>" +
+                                                    "<br><a href='/full/"+element[i]["filename"]+"' target='_blank'><i class='fas fa-external-link-alt'></i></a></td>" +
                                                     "<td>"+element[i]["number"]+"</td>" +
                                                     "<td>"+element[i]["genus"]+"</td>" +
                                                     "<td>"+element[i]["species"]+"</td>" +
@@ -52,11 +53,16 @@
             }
 
             $(document).on("click", '.slide_view', function(event) {
-                var slidepath = $(this).attr("slidepath");
+                var slidePath = $(this).attr("slidepath");
+                var searchString = $(this).attr("search-string");
                 $.ajax({
-                    url : slidepath,
+                    url : slidePath,
                     success: function(data){
                         $('#content').html(data);
+                        if(searchString)
+                            $('#backButton').attr("href", "/slides?searchString="+searchString);
+                        else
+                            $('#backButton').attr("href", "/slides");
                     }
                 });
             });
@@ -71,7 +77,11 @@
 
         <div class="btn-toolbar mb-3 justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
             <div class="input-group">
-                <input type="text" class="form-control" onkeyup="liveSearch(this.value)" placeholder="Slide Search" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                {% if search_string %}
+                    <input type="text" class="form-control" value="{{ search_string }}" onkeyup="liveSearch(this.value)" placeholder="Slide Search" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                {% else %}
+                    <input type="text" class="form-control" onkeyup="liveSearch(this.value)" placeholder="Slide Search" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                {% endif %}
             </div>
             <div class="btn-group mr-2" role="group" aria-label="First group">
                 <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"></i>
@@ -150,12 +160,26 @@
             </thead>
             {% for entry in root_dir.children recursive %}
             <tr>
-                <td><b>
+                <td>
                     {% if entry.url_path %}
-                    <a class="slide_view" href="#" slidepath="{{ url_for('slide', path=entry.url_path) }}">
-                        <i class='fas fa-microscope'></i>
+                        {% if search_string %}
+                            <a class="slide_view" href="#" search-string="{{ search_string }}" slidepath="{{ url_for('slide', path=entry.url_path) }}">
+                                <i class='fas fa-microscope'></i></a>
+                            <br>
+                            <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        {% else %}
+                            <a class="slide_view" href="#" search-string="" slidepath="{{ url_for('slide', path=entry.url_path) }}">
+                                <i class='fas fa-microscope'></i></a>
+                            <br>
+                            <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        {% endif %}
+
                     </a>
-                </td></b>
+                </td>
                 <td>{{ entry.slide_number }} </td>
                 <td>{{ entry.genus }} </td>
                 <td>{{ entry.species }} </td>
