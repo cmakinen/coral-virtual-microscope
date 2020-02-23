@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Slide List - Coral Virtual Microscope</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
     <script>
 			function liveSearch(value){
 				value = value.trim(); // remove any spaces around the text
@@ -16,7 +17,7 @@
                                     for (i = 0; i < element.length; i++) {
                                         $("#slideTable tbody").append(
                                               "<tr>" +
-                                                    "<td><b><a href='"+element[i]["filename"]+"' target='_blank'><i class='fas fa-microscope'></i></a></b></td>" +
+                                                    "<td><b><a class='slide_view' href='#' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a></b></td>" +
                                                     "<td>"+element[i]["number"]+"</td>" +
                                                     "<td>"+element[i]["genus"]+"</td>" +
                                                     "<td>"+element[i]["species"]+"</td>" +
@@ -39,6 +40,8 @@
 
 					});
 			}
+
+
             function toggleColumnChoice() {
               var x = document.getElementById("columnChoice");
               if (x.style.display === "none") {
@@ -47,6 +50,17 @@
                 x.style.display = "none";
               }
             }
+
+            $(document).on("click", '.slide_view', function(event) {
+                var slidepath = $(this).attr("slidepath");
+                $.ajax({
+                    url : slidepath,
+                    success: function(data){
+                        $('#content').html(data);
+                    }
+                });
+            });
+
 		</script>
 </head>
 <body>
@@ -113,7 +127,7 @@
                 <label class="form-check-label" for="inlineRadio13">Attachment</label>
             </div>
         </div>
-        <div id="results"></div> <!-- Results will be printed here -->
+        <div id="results"> <!-- Results will be printed here -->
         <table border="1px" id="slideTable" class="table table-striped table-hover">
             <thead>
             <tr >
@@ -136,11 +150,13 @@
             </thead>
             {% for entry in root_dir.children recursive %}
             <tr>
-                <th scope="row">
+                <td><b>
                     {% if entry.url_path %}
-                    <a href="{{ url_for('slide', path=entry.url_path) }}" target="_blank">
+                    <a class="slide_view" href="#" slidepath="{{ url_for('slide', path=entry.url_path) }}">
                         <i class='fas fa-microscope'></i>
                     </a>
+                </td></b>
+                <td>{{ entry.slide_number }} </td>
                 <td>{{ entry.genus }} </td>
                 <td>{{ entry.species }} </td>
                 <td>{{ entry.stain }} </td>

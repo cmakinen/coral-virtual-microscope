@@ -262,8 +262,8 @@ def slide(path):
 
     conn.close()
 
-    return render_template('slide-multipane.html', slide_url=slide_url,
-            slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties)
+    return render_template('slide-fullpage.html', slide_url=slide_url,
+            slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties, root_dir=_Directory(app.basedir))
 
 
 @app.route('/<path:path>.dzi')

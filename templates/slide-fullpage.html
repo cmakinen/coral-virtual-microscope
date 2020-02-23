@@ -1,27 +1,58 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>{{ slide_filename }}</title>
-
 <style type="text/css">
-html {
-    overflow: hidden;
-}
 body {
     margin: 0;
     padding: 0;
 }
 div#view {
-    position: absolute;
+    position: relative;
     left: 0;
-    width: 100%;
+    width: 70%;
     height: 100%;
     background-color: black;
     color: white;
 }
+div#properties {
+    left: 75%;
+    width: 25%;
+    height: 98%;
+    overflow: auto;
+}
+div#properties-inner {
+    display: inline-block;
+}
+div#properties dl {
+    font-size: small;
+    margin: 0;
+}
+div#properties dt {
+    font-weight: bold;
+    border-top: 1px solid #000;
+    background-color: #eee;
+}
+div#properties dd {
+    margin-left: 0;
+}
+
 </style>
-
-<div id="view"></div>
-
+<div id="wrapper" class="wrapper h-100">
+    <div class="row h-100">
+        <div id="view" class="ml-4"></div>
+        <div id="properties" class="ml-1">
+            {% if properties %}
+            <div id="properties-inner">
+                <dl>
+                    {% for name in properties %}
+                    <dt>{{ name }}
+                    <dd>{{ properties[name] }}
+                        {% endfor %}
+                </dl>
+            </div>
+            {% else %}
+            <span class="notice">None</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='openseadragon.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='openseadragon-scalebar.js') }}"></script>
