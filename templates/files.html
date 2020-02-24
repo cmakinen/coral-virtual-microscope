@@ -23,15 +23,20 @@
                                                     "<td>"+element[i]["genus"]+"</td>" +
                                                     "<td>"+element[i]["species"]+"</td>" +
                                                     "<td>"+element[i]["stain"]+"</td>" +
+                                                    "<td>"+element[i]["accession_number"]+"</td>" +
                                                     "<td>"+element[i]["source"]+"</td>" +
                                                     "<td>"+element[i]["contributor"]+"</td>" +
                                                     "<td>"+element[i]["processing"]+"</td>" +
                                                     "<td>"+element[i]["comments"]+"</td>" +
+                                                    "<td>"+element[i]["date_collected"]+"</td>" +
+                                                    "<td>"+element[i]["date_received"]+"</td>" +
                                                     "<td>"+element[i]["date_sent_to_aperio"]+"</td>" +
+                                                    "<td>"+element[i]["sample"]+"</td>" +
                                                     "<td>"+element[i]["infect"]+"</td>" +
+                                                    "<td>"+element[i]["study"]+"</td>" +
                                                     "<td>"+element[i]["collection_site"]+"</td>" +
                                                     "<td>"+element[i]["histopathologic_description"]+"</td>" +
-                                                    "<td>"+element[i]["attachment"]+"</td>" +
+                                                    <!--"<td><pre>"+element[i]["attachment"]+"</pre></td>" +-->
                                               "</tr>"
                                         );
 
@@ -67,6 +72,9 @@
                 });
             });
 
+            <!--$('#btn').click(function() {-->
+                <!--$('#wizard').toggle();-->
+            <!--});-->
 		</script>
     <style>
         .table thead th {
@@ -179,7 +187,7 @@
                 <th scope="col">Study</th>
                 <th scope="col">Collection Site</th>
                 <th scope="col">Histopathologic Description</th>
-                <th scope="col">Attachment</th>
+                <!--<th scope="col">Attachment</th>-->
 
             </tr>
             </thead>
@@ -222,7 +230,7 @@
                 <td>{{ entry.study}} </td>
                 <td>{{ entry.collection_site }} </td>
                 <td>{{ entry.histopathologic_description }} </td>
-                <td>{{ entry.attachment }} </td>
+                <!--<td><pre>{{ entry.attachment }} </pre></td>-->
                 {% else %}
                 {{ entry.name }}
                 {% endif %}
