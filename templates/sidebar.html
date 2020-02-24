@@ -7,6 +7,14 @@
     <script>
         $( document ).ready(function() {
             console.log( "ready!" );
+            console.log(window.location.pathname);
+            var els = document.querySelectorAll("a[href='"+window.location.pathname+"']");
+            for (var i = 0, l = els.length; i < l; i++) {
+              var el = els[i];
+              console.log(el);
+              el.parentElement.setAttribute("class","active");
+            }
+            console.log(els);
         });
     </script>
 </head>
