@@ -199,16 +199,18 @@ class _SlideFile(object):
         self.stain = slide['stain']
         self.source = slide['source']
         self.contributor = slide['contributor']
-        # self.accession_number = slide['accession_number']
+        self.accession_number = slide['accession_number']
         self.processing = slide['processing']
         self.comments = slide['comments']
+        self.date_collected = slide['date_collected']
+        self.date_received = slide['date_received']
         self.date_sent_to_aperio = slide['date_sent_to_aperio']
-        # self.sample = slide['sample']
+        self.sample = slide['sample']
         self.infect = slide['infect']
-        # self.study = slide['study']
+        self.study = slide['study']
         self.collection_site = slide['collection_site']
         self.histopathologic_description = slide['histopathologic_description']
-        self.attachment = "N/A"
+        self.attachment = slide['attachment']
 
         self.url_path = slide['filename']
 
