@@ -277,7 +277,7 @@ def slide(path):
         i = 0
         properties = {}
         for key in c.description:
-            properties[key[0]] = row[i]
+            properties[key[0].title()] = row[i]
             i = i + 1
 
     conn.close()
@@ -299,7 +299,7 @@ def slide_full(path):
         i = 0
         properties = {}
         for key in c.description:
-            properties[key[0]] = row[i]
+            properties[key[0].title()] = row[i]
             i = i + 1
 
     conn.close()
