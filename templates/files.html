@@ -196,18 +196,40 @@
                 <td>
                     {% if entry.url_path %}
                         {% if search_string %}
-                            <a class="slide_view" href="#" search-string="{{ search_string }}" slidepath="{{ url_for('slide', path=entry.url_path) }}">
-                                <i class='fas fa-microscope'></i></a>
+                                {% if entry.file_exists %}
+                                    <a class="slide_view" href="#" search-string="{{ search_string }}" slidepath="{{ url_for('slide', path=entry.url_path) }}">
+                                    <i class='fas fa-microscope'></i>
+                                {% else %}
+                                    <a>
+                                    <i class='fas fa-microscope' style="color:grey" title="Slide file not available"></i>
+                                {% endif %}
+                            </a>
                             <br>
-                            <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
-                            <i class="fas fa-external-link-alt"></i>
+                                {% if entry.file_exists %}
+                                    <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
+                                    <i class='fas fa-external-link-alt'></i>
+                                {% else %}
+                                    <a>
+                                    <i class="fas fa-external-link-alt" style="color:grey" title="Slide file not available"></i>
+                                {% endif %}
                             </a>
                         {% else %}
-                            <a class="slide_view" href="#" search-string="" slidepath="{{ url_for('slide', path=entry.url_path) }}">
-                                <i class='fas fa-microscope'></i></a>
+                                {% if entry.file_exists %}
+                                    <a class="slide_view" href="#" search-string="" slidepath="{{ url_for('slide', path=entry.url_path) }}">
+                                    <i class='fas fa-microscope'></i>
+                                {% else %}
+                                    <a>
+                                    <i class='fas fa-microscope' style="color:grey" title="Slide file not available"></i>
+                                {% endif %}
+                            </a>
                             <br>
-                            <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
-                            <i class="fas fa-external-link-alt"></i>
+                                {% if entry.file_exists %}
+                                    <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
+                                    <i class='fas fa-external-link-alt'></i>
+                                {% else %}
+                                    <a>
+                                    <i class="fas fa-external-link-alt" style="color:grey" title="Slide file not available"></i>
+                                {% endif %}
                             </a>
                         {% endif %}
 

@@ -37,6 +37,8 @@ from threading import Lock
 import json
 import sqlite3
 from flask_wtf.csrf import CSRFProtect
+from os import path
+
 
 SLIDE_DIR = '.'
 SLIDE_CACHE_SIZE = 10
@@ -184,6 +186,11 @@ class _Directory(object):
             for key in c.description:
                 slide[key[0]] = row[i]
                 i = i + 1
+
+            if(path.exists(basedir + "/" + slide["filename"])):
+                slide["file_exists"] = True
+            else:
+                slide["file_exists"] = False
             self.children.append(_SlideFile(slide))
 
         conn.close()
@@ -213,6 +220,7 @@ class _SlideFile(object):
         self.attachment = slide['attachment']
 
         self.url_path = slide['filename']
+        self.file_exists = slide['file_exists']
 
 @app.before_first_request
 def _setup():
