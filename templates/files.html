@@ -15,10 +15,17 @@
 						$("#slideTable > tbody").html("");
                         $.each(data, function(index, element) {
                                     for (i = 0; i < element.length; i++) {
+                                        link_html = ""
+                                        if(element[i]["file_exists"]){
+                                            link_html = "<td><a class='slide_view' href='#' search-string='"+value+"' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a>" +
+                                                    "<br><a href='/full/"+element[i]["filename"]+"' target='_blank'><i class='fas fa-external-link-alt'></i></a></td>"
+                                        }else{
+                                            link_html = "<td><a><i class='fas fa-microscope' style='color:grey' title='Slide file not available'></i></a>" +
+                                                    "<br><a><i class='fas fa-external-link-alt' style='color:grey' title='Slide file not available'></i></a></td>"
+                                        }
                                         $("#slideTable tbody").append(
                                               "<tr>" +
-                                                    "<td><a class='slide_view' href='#' search-string='"+value+"' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a>" +
-                                                    "<br><a href='/full/"+element[i]["filename"]+"' target='_blank'><i class='fas fa-external-link-alt'></i></a></td>" +
+                                                    link_html +
                                                     "<td>"+element[i]["number"]+"</td>" +
                                                     "<td>"+element[i]["genus"]+"</td>" +
                                                     "<td>"+element[i]["species"]+"</td>" +

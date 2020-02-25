@@ -187,7 +187,7 @@ class _Directory(object):
                 slide[key[0]] = row[i]
                 i = i + 1
 
-            if(path.exists(basedir + "/" + slide["filename"])):
+            if path.exists(basedir + "/" + slide["filename"]):
                 slide["file_exists"] = True
             else:
                 slide["file_exists"] = False
@@ -357,6 +357,10 @@ def search():
         for key in c.description:
             slide[key[0]] = row[i]
             i = i + 1
+        if path.exists(app.basedir + "/" + slide["filename"]):
+            slide["file_exists"] = True
+        else:
+            slide["file_exists"] = False
         slides.append(slide)
 
     conn.close()
