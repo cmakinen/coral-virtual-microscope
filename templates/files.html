@@ -79,9 +79,12 @@
                 });
             });
 
-            <!--$('#btn').click(function() {-->
-                <!--$('#wizard').toggle();-->
-            <!--});-->
+            $(function() {
+                $('#columnChoice').on('hide.bs.dropdown', function () {
+                    console.log(this);
+                    <!--Make for un-selected columns -->
+                })
+            });
 		</script>
     <style>
         .table thead th {
@@ -118,60 +121,32 @@
                     <input type="text" class="form-control rounded border border-dark" onkeyup="liveSearch(this.value)" placeholder="Slide Search">
                 {% endif %}
             </div>
-            <div class="btn-group mr-2" role="group">
-                <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"></i>
-            </div>
         </div>
-        <div class="btn-group-toggle" style="display:none" id="columnChoice">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                <label class="form-check-label" for="inlineRadio2">Slide Number</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio3" value="option3">
-                <label class="form-check-label" for="inlineRadio3">Genus</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio4" value="option3">
-                <label class="form-check-label" for="inlineRadio4">Species</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio5" value="option3">
-                <label class="form-check-label" for="inlineRadio5">Stain</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio6" value="option3">
-                <label class="form-check-label" for="inlineRadio6">Source</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio7" value="option3">
-                <label class="form-check-label" for="inlineRadio7">Contributor</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio8" value="option3">
-                <label class="form-check-label" for="inlineRadio8">Processing</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio9" value="option3">
-                <label class="form-check-label" for="inlineRadio9">Comments</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio10" value="option3">
-                <label class="form-check-label" for="inlineRadio10">Infect/Non</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio11" value="option3">
-                <label class="form-check-label" for="inlineRadio11">Collection Site</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio12" value="option3">
-                <label class="form-check-label" for="inlineRadio12">Histopathologic Description</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" name="inlineRadioOptions" id="inlineRadio13" value="option3">
-                <label class="form-check-label" for="inlineRadio13">Attachment</label>
-            </div>
+        <div class="btn-group mr-2 mt-0" role="group">
+            <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"> Column Preferences</i>
         </div>
+        <div style="display:none" id="columnChoice">
+            <select class="selectpicker" multiple id="columnPrefs">
+                <option>Slide Number</option>
+                <option>Genus</option>
+                <option>Species</option>
+                <option>Stain</option>
+                <option>Accession Number</option>
+                <option>Contributor</option>
+                <option>Processing</option>
+                <option>Comments</option>
+                <option>Date Collected</option>
+                <option>Date Received</option>
+                <option>Date Sent to Aperio</option>
+                <option>Sample</option>
+                <option>Infect/Non</option>
+                <option>Study</option>
+                <option>Collection Site</option>
+                <option>Histopathologic Description</option>
+                <option>Attachment</option>
+            </select>
+        </div>
+
         <div id="results">
         <table border="1px" id="slideTable" class="table table-striped table-hover">
             <thead>
