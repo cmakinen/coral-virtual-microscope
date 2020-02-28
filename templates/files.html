@@ -81,8 +81,26 @@
 
             $(function() {
                 $('#columnChoice').on('hide.bs.dropdown', function () {
-                    console.log(this);
-                    <!--Make for un-selected columns -->
+                    var selectedColumns = new Set();
+                    for (selectedColumn of jQuery(this).find("select.selectpicker").val()) {
+                        selectedColumns.add(selectedColumn);
+                    }
+
+                    var slideTable = document.getElementById("slideTable");
+                    var selectedHeaders = new Object();
+                    for(tableHeader of jQuery(slideTable).find("th")){
+                      if(selectedColumns.has(tableHeader.innerText)){
+                        selectedHeaders[jQuery(tableHeader).index()] = tableHeader.innerText;
+                      }
+                    }
+                    console.log(selectedHeaders);
+                    tableRows = jQuery(slideTable).find("tr")
+                    for(tableRow of jQuery(tableRows)){
+                        for (var i = 0, keys = Object.keys(selectedHeaders), ii = keys.length; i < ii; i++) {
+                          tableElement = tableRow.cells[keys[i]];
+                          jQuery(tableElement).attr("class", "d-none");
+                        }
+                    }
                 })
             });
 		</script>
@@ -105,6 +123,10 @@
             pointer-events: none;
             color: #aaa;
         }
+
+        .columnPrefs > input {
+          font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -122,11 +144,11 @@
                 {% endif %}
             </div>
         </div>
-        <div class="btn-group mr-2 mt-0" role="group">
+        <div class="btn-group btn-light mr-2 mt-0" role="group">
             <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"> Column Preferences</i>
         </div>
         <div style="display:none" id="columnChoice">
-            <select class="selectpicker" multiple id="columnPrefs">
+            <select class="selectpicker" multiple id="columnPrefs" data-selected-text-format="count > 3">
                 <option>Slide Number</option>
                 <option>Genus</option>
                 <option>Species</option>
