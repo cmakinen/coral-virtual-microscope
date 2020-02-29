@@ -43,7 +43,7 @@
                                                     "<td>"+element[i]["study"]+"</td>" +
                                                     "<td>"+element[i]["collection_site"]+"</td>" +
                                                     "<td>"+element[i]["histopathologic_description"]+"</td>" +
-                                                    <!--"<td><pre>"+element[i]["attachment"]+"</pre></td>" +-->
+                                                    "<td><pre>"+element[i]["attachment"]+"</pre></td>" +
                                               "</tr>"
                                         );
 
@@ -78,13 +78,6 @@
                 });
             });
 
-            $(function() {
-                $('#columnChoice').on('hide.bs.dropdown', function () {
-                    var event = new CustomEvent("name-of-event", { "detail": "Example of an event" });
-                    document.dispatchEvent(event);
-                })
-            });
-
             document.addEventListener("hide-show-columns", function(e) {
               var numCols = $("#slideTable").find('tr')[0].cells.length;
               console.log(numCols);
@@ -116,6 +109,13 @@
                     }
                   }
               }
+            });
+
+            $(function() {
+                $('#columnChoice').on('hide.bs.dropdown', function () {
+                    var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
+                    document.dispatchEvent(event);
+                })
             });
 
             $( document ).ready(function() {
@@ -210,7 +210,7 @@
                 <th scope="col">Study</th>
                 <th scope="col">Collection Site</th>
                 <th scope="col">Histopathologic Description</th>
-                <!--<th scope="col">Attachment</th>-->
+                <th scope="col">Attachment</th>
 
             </tr>
             </thead>
@@ -275,7 +275,7 @@
                 <td>{{ entry.study}} </td>
                 <td>{{ entry.collection_site }} </td>
                 <td>{{ entry.histopathologic_description }} </td>
-                <!--<td><pre>{{ entry.attachment }} </pre></td>-->
+                <td><pre>{{ entry.attachment }} </pre></td>
                 {% else %}
                 {{ entry.name }}
                 {% endif %}
