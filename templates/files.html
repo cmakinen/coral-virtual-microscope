@@ -50,7 +50,6 @@
                                     }
                                 });
 						}
-
 					});
 			}
 
@@ -81,27 +80,47 @@
 
             $(function() {
                 $('#columnChoice').on('hide.bs.dropdown', function () {
-                    var selectedColumns = new Set();
-                    for (selectedColumn of jQuery(this).find("select.selectpicker").val()) {
-                        selectedColumns.add(selectedColumn);
-                    }
-
-                    var slideTable = document.getElementById("slideTable");
-                    var selectedHeaders = new Object();
-                    for(tableHeader of jQuery(slideTable).find("th")){
-                      if(selectedColumns.has(tableHeader.innerText)){
-                        selectedHeaders[jQuery(tableHeader).index()] = tableHeader.innerText;
-                      }
-                    }
-                    console.log(selectedHeaders);
-                    tableRows = jQuery(slideTable).find("tr")
-                    for(tableRow of jQuery(tableRows)){
-                        for (var i = 0, keys = Object.keys(selectedHeaders), ii = keys.length; i < ii; i++) {
-                          tableElement = tableRow.cells[keys[i]];
-                          jQuery(tableElement).attr("class", "d-none");
-                        }
-                    }
+                    var event = new CustomEvent("name-of-event", { "detail": "Example of an event" });
+                    document.dispatchEvent(event);
                 })
+            });
+
+            document.addEventListener("hide-show-columns", function(e) {
+              var numCols = $("#slideTable").find('tr')[0].cells.length;
+              console.log(numCols);
+              var selectedColumns = new Set();
+              for (selectedColumn of jQuery(this).find("select.selectpicker").val()) {
+                  selectedColumns.add(selectedColumn);
+              }
+
+              var slideTable = document.getElementById("slideTable");
+              var selectedHeaders = new Object();
+              for(tableHeader of jQuery(slideTable).find("th")){
+                if(selectedColumns.has(tableHeader.innerText)){
+                  selectedHeaders[jQuery(tableHeader).index()] = tableHeader.innerText;
+                  jQuery(tableHeader).attr("class", "d-none");
+                }else{
+                  jQuery(tableHeader).removeAttr("class");
+                }
+              }
+              tableRows = jQuery(slideTable).find("tr")
+              for(tableRow of jQuery(tableRows)){
+                  for (var i = 0, keys = Object.keys(selectedHeaders), ii = keys.length; i < ii; i++) {
+                    tableElement = tableRow.cells[keys[i]];
+                    jQuery(tableElement).attr("class", "d-none");
+                  }
+                  for(var i=0; i < numCols; i++){
+                    if(!(i in selectedHeaders)){
+                      tableElement = tableRow.cells[i];
+                      jQuery(tableElement).removeAttr("class");
+                    }
+                  }
+              }
+            });
+
+            $( document ).ready(function() {
+                var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
+                document.dispatchEvent(event);
             });
 		</script>
     <style>
@@ -145,7 +164,7 @@
             </div>
         </div>
         <div class="btn-group btn-light mr-2 mt-0" role="group">
-            <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"> Column Preferences</i>
+            <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"> Hide Columns</i>
         </div>
         <div style="display:none" id="columnChoice">
             <select class="selectpicker" multiple id="columnPrefs" data-selected-text-format="count > 3">
