@@ -263,6 +263,13 @@ def home():
 def index():
     return render_template('home.html')
 
+@app.route('/courses')
+def courses():
+    return render_template('courses.html')
+
+@app.route('/course')
+def course():
+    return render_template('course.html')
 
 @app.route('/<path:path>')
 def slide(path):
