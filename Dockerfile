@@ -1,18 +1,13 @@
-FROM python:alpine
+FROM bitnami/minideb:buster
 
 COPY requirements-all.txt .
-
-RUN apk update \
-    && apk add wget build-base jpeg-dev zlib-dev openjpeg-dev tiff-dev glib-dev cairo-dev gdk-pixbuf-dev libxml2-dev sqlite-dev \
-    && wget https://github.com/openslide/openslide/releases/download/v3.4.1/openslide-3.4.1.tar.gz \
-    && pip install -r requirements-all.txt \
-    && tar -zxvf openslide-3.4.1.tar.gz \
-    && cd openslide-3.4.1 \
-    && ./configure \
-    && make \
-    && make install \
-    && rm -rf openslide-3.4.1 openslide-3.4.1.tar.gz \
-    && apk del wget build-base zlib-dev \
+RUN apt-get update -y \
+    && apt-get install -y python3 python3-pip openslide-tools \
+    && pip3 install -r requirements-all.txt --no-cache-dir \
+    && apt-get remove -y python3-pip \
+    && apt -y autoremove \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/* \
     && mkdir /openslide-app
 COPY app.py all_slides.db ./openslide-app/
 RUN mkdir ./openslide-app/static
@@ -21,7 +16,7 @@ ADD static/ ./openslide-app/static
 ADD templates/ ./openslide-app/templates
 
 WORKDIR ./openslide-app/
-CMD ["python", "app.py", "-p", "80", "-l", "0.0.0.0", "/slides"]
+CMD ["python3", "app.py", "-p", "80", "-l", "0.0.0.0", "/slides"]
 
 
 # ec2 docker installation
