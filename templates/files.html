@@ -3,126 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Slide List - Coral Virtual Microscope</title>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-    <script>
-			function liveSearch(value){
-				value = value.trim(); // remove any spaces around the text
-					$.ajax({
-						url: "search",
-						data: {searchText: value},
-						dataType: "json",
-						success: function(data){
-						$("#slideTable > tbody").html("");
-                        $.each(data, function(index, element) {
-                                    for (i = 0; i < element.length; i++) {
-                                        link_html = ""
-                                        if(element[i]["file_exists"]){
-                                            link_html = "<td><a class='slide_view' href='#' search-string='"+value+"' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a>" +
-                                                    "<br><a href='/full/"+element[i]["filename"]+"' target='_blank'><i class='fas fa-external-link-alt'></i></a></td>"
-                                        }else{
-                                            link_html = "<td><a><i class='fas fa-microscope' style='color:grey' title='Slide file not available'></i></a>" +
-                                                    "<br><a><i class='fas fa-external-link-alt' style='color:grey' title='Slide file not available'></i></a></td>"
-                                        }
-                                        $("#slideTable tbody").append(
-                                              "<tr>" +
-                                                    link_html +
-                                                    "<td>"+element[i]["number"]+"</td>" +
-                                                    "<td>"+element[i]["genus"]+"</td>" +
-                                                    "<td>"+element[i]["species"]+"</td>" +
-                                                    "<td>"+element[i]["stain"]+"</td>" +
-                                                    "<td>"+element[i]["accession_number"]+"</td>" +
-                                                    "<td>"+element[i]["source"]+"</td>" +
-                                                    "<td>"+element[i]["contributor"]+"</td>" +
-                                                    "<td>"+element[i]["processing"]+"</td>" +
-                                                    "<td>"+element[i]["comments"]+"</td>" +
-                                                    "<td>"+element[i]["date_collected"]+"</td>" +
-                                                    "<td>"+element[i]["date_received"]+"</td>" +
-                                                    "<td>"+element[i]["date_sent_to_aperio"]+"</td>" +
-                                                    "<td>"+element[i]["sample"]+"</td>" +
-                                                    "<td>"+element[i]["infect"]+"</td>" +
-                                                    "<td>"+element[i]["study"]+"</td>" +
-                                                    "<td>"+element[i]["collection_site"]+"</td>" +
-                                                    "<td>"+element[i]["histopathologic_description"]+"</td>" +
-                                                    "<td><pre>"+element[i]["attachment"]+"</pre></td>" +
-                                              "</tr>"
-                                        );
-
-                                    }
-                                });
-						}
-					});
-			}
-
-
-            function toggleColumnChoice() {
-              var x = document.getElementById("columnChoice");
-              if (x.style.display === "none") {
-                x.style.display = "block";
-              } else {
-                x.style.display = "none";
-              }
-            }
-
-            $(document).on("click", '.slide_view', function(event) {
-                var slidePath = $(this).attr("slidepath");
-                var searchString = $(this).attr("search-string");
-                $.ajax({
-                    url : slidePath,
-                    success: function(data){
-                        $('#content').html(data);
-                        if(searchString)
-                            $('#backButton').attr("href", "/slides?searchString="+searchString);
-                        else
-                            $('#backButton').attr("href", "/slides");
-                    }
-                });
-            });
-
-            document.addEventListener("hide-show-columns", function(e) {
-              var numCols = $("#slideTable").find('tr')[0].cells.length;
-              console.log(numCols);
-              var selectedColumns = new Set();
-              for (selectedColumn of jQuery(this).find("select.selectpicker").val()) {
-                  selectedColumns.add(selectedColumn);
-              }
-
-              var slideTable = document.getElementById("slideTable");
-              var selectedHeaders = new Object();
-              for(tableHeader of jQuery(slideTable).find("th")){
-                if(selectedColumns.has(tableHeader.innerText)){
-                  selectedHeaders[jQuery(tableHeader).index()] = tableHeader.innerText;
-                  jQuery(tableHeader).attr("class", "d-none");
-                }else{
-                  jQuery(tableHeader).removeAttr("class");
-                }
-              }
-              tableRows = jQuery(slideTable).find("tr")
-              for(tableRow of jQuery(tableRows)){
-                  for (var i = 0, keys = Object.keys(selectedHeaders), ii = keys.length; i < ii; i++) {
-                    tableElement = tableRow.cells[keys[i]];
-                    jQuery(tableElement).attr("class", "d-none");
-                  }
-                  for(var i=0; i < numCols; i++){
-                    if(!(i in selectedHeaders)){
-                      tableElement = tableRow.cells[i];
-                      jQuery(tableElement).removeAttr("class");
-                    }
-                  }
-              }
-            });
-
-            $(function() {
-                $('#columnChoice').on('hide.bs.dropdown', function () {
-                    var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
-                    document.dispatchEvent(event);
-                })
-            });
-
-            $( document ).ready(function() {
-                var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
-                document.dispatchEvent(event);
-            });
-		</script>
     <style>
         .table thead th {
             background-color: #cacbe7;
@@ -294,5 +174,124 @@
         </table>
     </div>
 </div>
+    <script>
+			function liveSearch(value){
+				value = value.trim(); // remove any spaces around the text
+					$.ajax({
+						url: "search",
+						data: {searchText: value},
+						dataType: "json",
+						success: function(data){
+						$("#slideTable > tbody").html("");
+                        $.each(data, function(index, element) {
+                                    for (i = 0; i < element.length; i++) {
+                                        link_html = ""
+                                        if(element[i]["file_exists"]){
+                                            link_html = "<td><a class='slide_view' href='#' search-string='"+value+"' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a>" +
+                                                    "<br><a href='/full/"+element[i]["filename"]+"' target='_blank'><i class='fas fa-external-link-alt'></i></a></td>"
+                                        }else{
+                                            link_html = "<td><a><i class='fas fa-microscope' style='color:grey' title='Slide file not available'></i></a>" +
+                                                    "<br><a><i class='fas fa-external-link-alt' style='color:grey' title='Slide file not available'></i></a></td>"
+                                        }
+                                        $("#slideTable tbody").append(
+                                              "<tr>" +
+                                                    link_html +
+                                                    "<td>"+element[i]["number"]+"</td>" +
+                                                    "<td>"+element[i]["genus"]+"</td>" +
+                                                    "<td>"+element[i]["species"]+"</td>" +
+                                                    "<td>"+element[i]["stain"]+"</td>" +
+                                                    "<td>"+element[i]["accession_number"]+"</td>" +
+                                                    "<td>"+element[i]["source"]+"</td>" +
+                                                    "<td>"+element[i]["contributor"]+"</td>" +
+                                                    "<td>"+element[i]["processing"]+"</td>" +
+                                                    "<td>"+element[i]["comments"]+"</td>" +
+                                                    "<td>"+element[i]["date_collected"]+"</td>" +
+                                                    "<td>"+element[i]["date_received"]+"</td>" +
+                                                    "<td>"+element[i]["date_sent_to_aperio"]+"</td>" +
+                                                    "<td>"+element[i]["sample"]+"</td>" +
+                                                    "<td>"+element[i]["infect"]+"</td>" +
+                                                    "<td>"+element[i]["study"]+"</td>" +
+                                                    "<td>"+element[i]["collection_site"]+"</td>" +
+                                                    "<td>"+element[i]["histopathologic_description"]+"</td>" +
+                                                    "<td><pre>"+element[i]["attachment"]+"</pre></td>" +
+                                              "</tr>"
+                                        );
+
+                                    }
+                                });
+						}
+					});
+			}
+
+
+            function toggleColumnChoice() {
+              var x = document.getElementById("columnChoice");
+              if (x.style.display === "none") {
+                x.style.display = "block";
+              } else {
+                x.style.display = "none";
+              }
+            }
+
+            $(document).on("click", '.slide_view', function(event) {
+                var slidePath = $(this).attr("slidepath");
+                var searchString = $(this).attr("search-string");
+                $.ajax({
+                    url : slidePath,
+                    success: function(data){
+                        $('#content').html(data);
+                        if(searchString)
+                            $('#backButton').attr("href", "/slides?searchString="+searchString);
+                        else
+                            $('#backButton').attr("href", "/slides");
+                    }
+                });
+            });
+
+            document.addEventListener("hide-show-columns", function(e) {
+              var numCols = $("#slideTable").find('tr')[0].cells.length;
+              console.log(numCols);
+              var selectedColumns = new Set();
+              for (selectedColumn of jQuery(this).find("select.selectpicker").val()) {
+                  selectedColumns.add(selectedColumn);
+              }
+
+              var slideTable = document.getElementById("slideTable");
+              var selectedHeaders = new Object();
+              for(tableHeader of jQuery(slideTable).find("th")){
+                if(selectedColumns.has(tableHeader.innerText)){
+                  selectedHeaders[jQuery(tableHeader).index()] = tableHeader.innerText;
+                  jQuery(tableHeader).attr("class", "d-none");
+                }else{
+                  jQuery(tableHeader).removeAttr("class");
+                }
+              }
+              tableRows = jQuery(slideTable).find("tr")
+              for(tableRow of jQuery(tableRows)){
+                  for (var i = 0, keys = Object.keys(selectedHeaders), ii = keys.length; i < ii; i++) {
+                    tableElement = tableRow.cells[keys[i]];
+                    jQuery(tableElement).attr("class", "d-none");
+                  }
+                  for(var i=0; i < numCols; i++){
+                    if(!(i in selectedHeaders)){
+                      tableElement = tableRow.cells[i];
+                      jQuery(tableElement).removeAttr("class");
+                    }
+                  }
+              }
+            });
+
+            $(function() {
+                $('#columnChoice').on('hide.bs.dropdown', function () {
+                    var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
+                    document.dispatchEvent(event);
+                })
+            });
+
+            $( document ).ready(function() {
+                var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
+                document.dispatchEvent(event);
+            });
+		</script>
 </body>
 </html>
