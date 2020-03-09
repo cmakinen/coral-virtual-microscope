@@ -90,6 +90,7 @@ $(document).ready(function() {
     var mpp = parseFloat("{{ slide_mpp }}");
     viewer.scalebar({
         pixelsPerMeter: mpp ? (1e6 / mpp) : 0,
+        location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
         xOffset: 10,
         yOffset: 10,
         barThickness: 3,
