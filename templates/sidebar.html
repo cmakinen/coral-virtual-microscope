@@ -10,10 +10,11 @@
 
     <script>
         $( document ).ready(function() {
-            var els = document.querySelectorAll("a[href='"+window.location.pathname+"']");
-            for (var i = 0, l = els.length; i < l; i++) {
-              var el = els[i];
-              el.parentElement.setAttribute("class","active");
+            var sidebarHrefs = document.getElementById('sidebar').getElementsByTagName('a');
+            for (var i = 0, l = sidebarHrefs.length; i < l; i++) {
+              if(sidebarHrefs[i].getAttribute("href") === window.location.pathname){
+                sidebarHrefs[i].parentElement.setAttribute("class","active");
+              }
             }
         });
     </script>

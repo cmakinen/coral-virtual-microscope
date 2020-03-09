@@ -38,7 +38,7 @@ import json
 import sqlite3
 from flask_wtf.csrf import CSRFProtect
 from os import path
-
+from waitress import serve
 
 SLIDE_DIR = '.'
 SLIDE_CACHE_SIZE = 10
@@ -418,4 +418,4 @@ if __name__ == '__main__':
     except IndexError:
         pass
 
-    app.run(host=opts.host, port=opts.port, threaded=True)
+    serve(app, host=opts.host, port=opts.port, threads=6)
