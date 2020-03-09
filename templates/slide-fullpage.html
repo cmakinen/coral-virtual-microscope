@@ -59,6 +59,7 @@ div#properties dd {
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='openseadragon.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='openseadragon-scalebar.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='openseadragon-annotations.js') }}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     var viewer = new OpenSeadragon({
@@ -76,6 +77,8 @@ $(document).ready(function() {
         zoomPerScroll: 2,
         timeout: 120000,
     });
+    viewer.initializeAnnotations();
+
     viewer.addHandler("open", function() {
         // To improve load times, ignore the lowest-resolution Deep Zoom
         // levels.  This is a hack: we can't configure the minLevel via

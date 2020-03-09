@@ -114,6 +114,7 @@ div#properties dd {
 <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="../static/openseadragon.js"></script>
 <script type="text/javascript" src="../static/openseadragon-scalebar.js"></script>
+<script type="text/javascript" src="../static/openseadragon-annotations.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     var dzi_data = {{ dzi_data|default('{}')|safe }};
@@ -135,6 +136,8 @@ $(document).ready(function() {
         showNavigator: true,
         navigatorPosition: "TOP_RIGHT"
     });
+    viewer.initializeAnnotations();
+
     viewer.addHandler("open", function() {
         // To improve load times, ignore the lowest-resolution Deep Zoom
         // levels.  This is a hack: we can't configure the minLevel via
