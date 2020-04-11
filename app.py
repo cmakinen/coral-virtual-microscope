@@ -418,4 +418,4 @@ if __name__ == '__main__':
     except IndexError:
         pass
 
-    serve(app, host=opts.host, port=opts.port, threads=6)
+    serve(app, host=opts.host, port=opts.port, threads=8)

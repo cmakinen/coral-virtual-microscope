@@ -20,56 +20,7 @@
     </script>
 </head>
 <body>
-<div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Sign in</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form class="form-signin" method="POST" action="/login?next={{ url_for(request.endpoint) }}">
-                <div class="modal-body mx-3">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <div class="md-form mb-5 input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-envelope"></i></span>
-                        </div>
-                        <input type="email" id="defaultForm-email" name="email" class="form-control validate" placeholder="Your email">
-                        <label data-error="wrong" data-success="right" for="defaultForm-email"/>
-                    </div>
-                    <div class="md-form mb-4 input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-key"></i></span>
-                        </div>
-                        <input type="password" id="defaultForm-pass" name="password" class="form-control validate"  placeholder="Your password">
-                        <label data-error="wrong" data-success="right" for="defaultForm-pass"/>
-                    </div>
-
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <input type="submit" class="btn btn-primary" value="Login"/>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
     <nav id="sidebar" class="">
-        {% if current_user.is_authenticated %}
-        <div class="dropdown">
-            <button class="btn btn-primary-outline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                {{ current_user.get_id() }}
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Profile</a>
-                <a class="dropdown-item" href="/logout">Sign Out</a>
-            </div>
-        </div>
-        {% else %}
-        <div class="mr-2 mt-2"><a href="" class="btn btn-primary btn-rounded mb-4" data-toggle="modal" data-target="#modalLoginForm">Login</a></div>
-        {% endif %}
         <div class="custom-menu">
             <button type="button" id="sidebarCollapse" class="btn btn-primary">
                 <i class="fa fa-bars"></i>
@@ -80,7 +31,7 @@
             <h1><a href="/home" class="logo"></a></h1>
             <ul class="list-unstyled components mb-5">
                 <li>
-                    <a href="/home"><span class="fa fa-home mr-3"></span> Home</a>
+                    <a href="/home"><span class="fa fa-home mr-3"></span>Home</a>
                 </li>
                 <li>
                     <a href="/slides"><span class="fa fa-user mr-3"></span> Slides</a>
@@ -97,16 +48,6 @@
                     <a href="#"><span class="fa fa-paper-plane mr-3"></span> Contact</a>
                 </li>
             </ul>
-
-            <div class="mb-5">
-                <h3 class="h6 mb-3">Subscribe for newsletter</h3>
-                <form action="#" class="subscribe-form">
-                    <div class="form-group d-flex">
-                        <div class="icon"><span class="icon-paper-plane"></span></div>
-                        <input type="text" class="form-control" placeholder="Enter Email Address">
-                    </div>
-                </form>
-            </div>
 
             <div class="footer">
                 <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
