@@ -69,8 +69,8 @@
             </select>
         </div>
 
-        <div id="results">
-        <table border="1px" id="slideTable" class="table table-striped table-hover">
+        <div id="results" class="mb-4">
+        <table border="1px" id="slideTable" class="table table-striped table-hover table-borderless table-responsive">
             <thead>
             <tr >
                 <th scope="col">View</th>
@@ -91,8 +91,6 @@
                 <th scope="col">Study</th>
                 <th scope="col">Collection Site</th>
                 <th scope="col">Histopathologic Description</th>
-                <th scope="col">Attachment</th>
-
             </tr>
             </thead>
             {% for entry in root_dir.children recursive %}
@@ -156,7 +154,7 @@
                 <td>{{ entry.study}} </td>
                 <td>{{ entry.collection_site }} </td>
                 <td>{{ entry.histopathologic_description }} </td>
-                <td><pre>{{ entry.attachment }} </pre></td>
+
                 {% else %}
                 {{ entry.name }}
                 {% endif %}
@@ -214,7 +212,6 @@
                                                     "<td>"+element[i]["study"]+"</td>" +
                                                     "<td>"+element[i]["collection_site"]+"</td>" +
                                                     "<td>"+element[i]["histopathologic_description"]+"</td>" +
-                                                    "<td><pre>"+element[i]["attachment"]+"</pre></td>" +
                                               "</tr>"
                                         );
 

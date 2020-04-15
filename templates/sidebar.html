@@ -7,6 +7,8 @@
     <script src="https://kit.fontawesome.com/f9399c1fb9.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.20/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/dt-1.10.20/datatables.min.js"></script>
 
     <script>
         $( document ).ready(function() {
@@ -17,6 +19,10 @@
               }
             }
         });
+        $(document).ready(function() {
+            $.noConflict();
+            $('#slideTable').DataTable();
+        } );
     </script>
 </head>
 <body>
