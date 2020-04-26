@@ -18,7 +18,6 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-from collections import OrderedDict
 import flask
 from flask import Flask, request, abort, make_response, render_template, url_for, redirect
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
@@ -27,30 +26,16 @@ from wtforms import StringField, BooleanField
 from wtforms.validators import DataRequired
 from is_safe_url import is_safe_url
 
-from io import BytesIO
-import openslide
-from openslide import OpenSlide, OpenSlideError
-from openslide.deepzoom import DeepZoomGenerator
-import os
 from optparse import OptionParser
-from threading import Lock
 import json
 import sqlite3
 from flask_wtf.csrf import CSRFProtect
-from os import path
 from waitress import serve
 
 SLIDE_DIR = '.'
-SLIDE_CACHE_SIZE = 10
-DEEPZOOM_FORMAT = 'jpeg'
-DEEPZOOM_TILE_SIZE = 254
-DEEPZOOM_OVERLAP = 1
-DEEPZOOM_LIMIT_BOUNDS = True
-DEEPZOOM_TILE_QUALITY = 75
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config.from_envvar('DEEPZOOM_MULTISERVER_SETTINGS', silent=True)
 app.config["SECRET_KEY"] = "ITSASECRET"
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -126,69 +111,6 @@ def logout():
     logout_user()
     return redirect(flask.request.environ["HTTP_REFERER"])
 
-class PILBytesIO(BytesIO):
-    def fileno(self):
-        '''Classic PIL doesn't understand io.UnsupportedOperation.'''
-        raise AttributeError('Not supported')
-
-
-class _SlideCache(object):
-    def __init__(self, cache_size, dz_opts):
-        self.cache_size = cache_size
-        self.dz_opts = dz_opts
-        self._lock = Lock()
-        self._cache = OrderedDict()
-
-    def get(self, path):
-        with self._lock:
-            if path in self._cache:
-                # Move to end of LRU
-                slide = self._cache.pop(path)
-                self._cache[path] = slide
-                return slide
-
-        osr = OpenSlide(path)
-        slide = DeepZoomGenerator(osr, **self.dz_opts)
-        try:
-            mpp_x = osr.properties[openslide.PROPERTY_NAME_MPP_X]
-            mpp_y = osr.properties[openslide.PROPERTY_NAME_MPP_Y]
-            slide.mpp = (float(mpp_x) + float(mpp_y)) / 2
-        except (KeyError, ValueError):
-            slide.mpp = 0
-
-        with self._lock:
-            if path not in self._cache:
-                if len(self._cache) == self.cache_size:
-                    self._cache.popitem(last=False)
-                self._cache[path] = slide
-        return slide
-
-@app.before_first_request
-def _setup():
-    app.basedir = os.path.abspath(app.config['SLIDE_DIR'])
-    config_map = {
-        'DEEPZOOM_TILE_SIZE': 'tile_size',
-        'DEEPZOOM_OVERLAP': 'overlap',
-        'DEEPZOOM_LIMIT_BOUNDS': 'limit_bounds',
-    }
-    opts = dict((v, app.config[k]) for k, v in config_map.items())
-    app.cache = _SlideCache(app.config['SLIDE_CACHE_SIZE'], opts)
-
-
-def _get_slide(path):
-    path = os.path.abspath(os.path.join(app.basedir, path))
-    if not path.startswith(app.basedir + os.path.sep):
-        # Directory traversal
-        abort(404)
-    if not os.path.exists(path):
-        abort(404)
-    try:
-        slide = app.cache.get(path)
-        slide.filename = os.path.basename(path)
-        return slide
-    except OpenSlideError:
-        abort(404)
-
 @app.route('/slides')
 def slides():
     return render_template('files.html')
@@ -211,76 +133,44 @@ def course():
 
 @app.route('/<path:path>')
 def slide(path):
-    slide = _get_slide(path)
     slide_url = url_for('dzi', path=path)
 
     conn = sqlite3.connect('all_slides.db')
     c = conn.cursor()
     c.execute("select * from slides where filename = ?", (path,))
     records = c.fetchall()
+    properties = {}
     for row in records:
         i = 0
-        properties = {}
         for key in c.description:
             properties[key[0].title()] = row[i]
             i = i + 1
 
     conn.close()
 
-    return render_template('slide-fullpage.html', slide_url=slide_url,
-            slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties)
+    return render_template('slide-fullpage.html', slide_url=slide_url, properties=properties)
 
 @app.route('/full/<path:path>')
 def slide_full(path):
     print(path)
-    slide = _get_slide(path)
-    slide_url = url_for('dzi', path=path)
+    # slide_url = url_for('dzi', path=path)
+
+    dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
     conn = sqlite3.connect('all_slides.db')
     c = conn.cursor()
     c.execute("select * from slides where filename = ?", (path,))
     records = c.fetchall()
+    properties = {}
     for row in records:
         i = 0
-        properties = {}
         for key in c.description:
             properties[key[0].title()] = row[i]
             i = i + 1
 
     conn.close()
 
-    return render_template('slide-multipane.html', slide_url=slide_url,
-                           slide_filename=slide.filename, slide_mpp=slide.mpp, properties=properties)
-
-
-@app.route('/<path:path>.dzi')
-@app.route('/full/<path:path>.dzi')
-def dzi(path):
-    slide = _get_slide(path)
-    format = app.config['DEEPZOOM_FORMAT']
-    resp = make_response(slide.get_dzi(format))
-    resp.mimetype = 'application/xml'
-    return resp
-
-
-@app.route('/<path:path>_files/<int:level>/<int:col>_<int:row>.<format>')
-@app.route('/full/<path:path>_files/<int:level>/<int:col>_<int:row>.<format>')
-def tile(path, level, col, row, format):
-    slide = _get_slide(path)
-    format = format.lower()
-    if format != 'jpeg' and format != 'png':
-        # Not supported by Deep Zoom
-        abort(404)
-    try:
-        tile = slide.get_tile(level, (col, row))
-    except ValueError:
-        # Invalid level or coordinates
-        abort(404)
-    buf = PILBytesIO()
-    tile.save(buf, format, quality=app.config['DEEPZOOM_TILE_QUALITY'])
-    resp = make_response(buf.getvalue())
-    resp.mimetype = 'image/%s' % format
-    return resp
+    return render_template('slide-multipane.html', slide_url=dzi_path, properties=properties)
 
 @app.route("/search")
 def search():
@@ -303,10 +193,10 @@ def search():
         for key in c.description:
             slide[key[0]] = row[i]
             i = i + 1
-        if path.exists(app.basedir + "/" + slide["filename"]):
+        # if path.exists(app.basedir + "/" + slide["filename"]):
             slide["file_exists"] = True
-        else:
-            slide["file_exists"] = False
+        # else:
+        #     slide["file_exists"] = False
         slide["view"] = slide["filename"]
         data.append(slide)
 
@@ -314,6 +204,10 @@ def search():
 
     # return as JSON
     return json.dumps({'data': data})
+
+@app.route('/test')
+def test():
+    return render_template('static.html')
 
 if __name__ == '__main__':
     parser = OptionParser(usage='Usage: %prog [options] [slide-directory]')

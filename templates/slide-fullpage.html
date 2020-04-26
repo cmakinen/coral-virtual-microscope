@@ -65,7 +65,7 @@
 $(document).ready(function() {
     var viewer = new OpenSeadragon({
         id: "view",
-        tileSources: "{{ slide_url }}",
+        tileSources: "https://dziimages.blob.core.windows.net/coralvm/{{ slide_url }}",
         prefixUrl: "{{ url_for('static', filename='images/') }}",
         showNavigator: true,
         showRotationControl: true,
