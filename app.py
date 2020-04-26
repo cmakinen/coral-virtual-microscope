@@ -133,7 +133,7 @@ def course():
 
 @app.route('/<path:path>')
 def slide(path):
-    slide_url = url_for('dzi', path=path)
+    dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
     conn = sqlite3.connect('all_slides.db')
     c = conn.cursor()
@@ -153,7 +153,6 @@ def slide(path):
 @app.route('/full/<path:path>')
 def slide_full(path):
     print(path)
-    # slide_url = url_for('dzi', path=path)
 
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
