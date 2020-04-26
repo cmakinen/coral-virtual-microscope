@@ -204,10 +204,6 @@ def search():
     # return as JSON
     return json.dumps({'data': data})
 
-@app.route('/test')
-def test():
-    return render_template('static.html')
-
 if __name__ == '__main__':
     parser = OptionParser(usage='Usage: %prog [options] [slide-directory]')
     parser.add_option('-B', '--ignore-bounds', dest='DEEPZOOM_LIMIT_BOUNDS',
