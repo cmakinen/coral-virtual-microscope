@@ -163,65 +163,6 @@ class _SlideCache(object):
                 self._cache[path] = slide
         return slide
 
-
-class _Directory(object):
-    def __init__(self, basedir, relpath='', searchString=''):
-        self.name = os.path.basename(relpath)
-        self.children = []
-        conn = sqlite3.connect('all_slides.db')
-        c = conn.cursor()
-
-        if searchString:
-            qs = '%'+searchString+'%'
-            t = (qs,qs,qs,qs,qs,qs,qs,qs,qs,)
-            c.execute("""select * from slides where filename LIKE ? OR number LIKE ? OR genus LIKE ? OR species LIKE ?
-                 OR source LIKE ? OR contributor LIKE ? OR comments LIKE ? OR collection_site LIKE ? OR histopathologic_description LIKE ?"""
-                    ,t)
-        else:
-            c.execute("select * from slides")
-        records = c.fetchall()
-        for row in records:
-            i = 0
-            slide = {}
-            for key in c.description:
-                slide[key[0]] = row[i]
-                i = i + 1
-
-            if path.exists(basedir + "/" + slide["filename"]):
-                slide["file_exists"] = True
-            else:
-                slide["file_exists"] = False
-            self.children.append(_SlideFile(slide))
-
-        conn.close()
-
-
-class _SlideFile(object):
-    def __init__(self, slide):
-        self.name = slide['filename']
-        self.slide_number = slide['number']
-        # self.slide_description = row[4]
-        self.genus = slide['genus']
-        self.species= slide['species']
-        self.stain = slide['stain']
-        self.source = slide['source']
-        self.contributor = slide['contributor']
-        self.accession_number = slide['accession_number']
-        self.processing = slide['processing']
-        self.comments = slide['comments']
-        self.date_collected = slide['date_collected']
-        self.date_received = slide['date_received']
-        self.date_sent_to_aperio = slide['date_sent_to_aperio']
-        self.sample = slide['sample']
-        self.infect = slide['infect']
-        self.study = slide['study']
-        self.collection_site = slide['collection_site']
-        self.histopathologic_description = slide['histopathologic_description']
-        self.attachment = slide['attachment']
-
-        self.url_path = slide['filename']
-        self.file_exists = slide['file_exists']
-
 @app.before_first_request
 def _setup():
     app.basedir = os.path.abspath(app.config['SLIDE_DIR'])
@@ -250,10 +191,7 @@ def _get_slide(path):
 
 @app.route('/slides')
 def slides():
-    searchString = request.args.get('searchString')
-    if (searchString):
-        return render_template('files.html', root_dir=_Directory(app.basedir, searchString=searchString), search_string=searchString)
-    return render_template('files.html', root_dir=_Directory(app.basedir), search_string=searchString)
+    return render_template('files.html')
 
 @app.route('/home')
 def home():
@@ -346,8 +284,9 @@ def tile(path, level, col, row, format):
 
 @app.route("/search")
 def search():
-    text = request.args['searchText'] # get the text to search for
-
+    text = request.args.get("searchText") # get the text to search for
+    if text is None:
+        text = ""
     conn = sqlite3.connect('all_slides.db')
     c = conn.cursor()
     qs = '%'+text+'%'
@@ -357,7 +296,7 @@ def search():
               ,t)
 
     records = c.fetchall()
-    slides = []
+    data = []
     for row in records:
         i = 0
         slide = {}
@@ -368,12 +307,13 @@ def search():
             slide["file_exists"] = True
         else:
             slide["file_exists"] = False
-        slides.append(slide)
+        slide["view"] = slide["filename"]
+        data.append(slide)
 
     conn.close()
 
     # return as JSON
-    return json.dumps({'slides': slides})
+    return json.dumps({'data': data})
 
 if __name__ == '__main__':
     parser = OptionParser(usage='Usage: %prog [options] [slide-directory]')

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Slide List - Coral Virtual Microscope</title>
+    <meta charset="UTF-8">
+    <title>Slide List - Coral Virtual Microscope</title>
     <style>
         .table thead th {
             background-color: #cacbe7;
@@ -26,270 +26,48 @@
         .columnPrefs > input {
           font-size: 20px;
         }
+
+
     </style>
 </head>
 <body>
 
-<div id="wrapper" class="wrapper d-flex align-items-stretch">
+<div id="wrapper" class="wrapper d-flex">
     {% include 'sidebar.html' %}
-    <div id="content" class="pl-4 pl-md-5">
+    <div id="content" class="pl-4 pl-md-5 pr-5">
         {% include 'topbar.html' %}
-        <div class="btn-toolbar mb-3 justify-content-between ml-0" role="toolbar">
-            <div class="form-group has-search p-0 col-lg-10">
-                <span class="fa fa-search form-control-feedback"></span>
-                {% if search_string %}
-                    <input type="text" class="form-control rounded border border-dark" value="{{ search_string }}" onkeyup="liveSearch(this.value)" placeholder="Slide Search">
-                {% else %}
-                    <input type="text" class="form-control rounded border border-dark" onkeyup="liveSearch(this.value)" placeholder="Slide Search">
-                {% endif %}
-            </div>
-        </div>
-        <div class="btn-group btn-light mr-2 mt-0 d-none" role="group">
-            <i class="fas fa-chevron-circle-down" onclick="toggleColumnChoice()"> Hide Columns</i>
-        </div>
-        <div style="display:none" id="columnChoice">
-            <select class="selectpicker" multiple id="columnPrefs" data-selected-text-format="count > 3">
-                <option>Slide Number</option>
-                <option>Genus</option>
-                <option>Species</option>
-                <option>Stain</option>
-                <option>Accession Number</option>
-                <option>Contributor</option>
-                <option>Processing</option>
-                <option>Comments</option>
-                <option>Date Collected</option>
-                <option>Date Received</option>
-                <option>Date Sent to Aperio</option>
-                <option>Sample</option>
-                <option>Infect/Non</option>
-                <option>Study</option>
-                <option>Collection Site</option>
-                <option>Histopathologic Description</option>
-                <option>Attachment</option>
-            </select>
-        </div>
-
         <div id="results" class="mb-4">
-        <table border="1px" id="slideTable" class="table table-striped table-hover table-borderless table-responsive">
-            <thead>
-            <tr >
-                <th scope="col">View</th>
-                <th scope="col">Slide Number</th>
-                <th scope="col">Genus</th>
-                <th scope="col">Species</th>
-                <th scope="col">Stain</th>
-                <th scope="col">Accession Number</th>
-                <th scope="col">Source</th>
-                <th scope="col">Contributor</th>
-                <th scope="col">Processing</th>
-                <th scope="col">Comments</th>
-                <th scope="col">Date Collected</th>
-                <th scope="col">Date Received</th>
-                <th scope="col">Date Sent to Aperio</th>
-                <th scope="col">Sample</th>
-                <th scope="col">Infect/Non</th>
-                <th scope="col">Study</th>
-                <th scope="col">Collection Site</th>
-                <th scope="col">Histopathologic Description</th>
-            </tr>
-            </thead>
-            {% for entry in root_dir.children recursive %}
-            <tr>
-                <td>
-                    {% if entry.url_path %}
-                        {% if search_string %}
-                                {% if entry.file_exists %}
-                                    <a class="slide_view" href="#" search-string="{{ search_string }}" slidepath="{{ url_for('slide', path=entry.url_path) }}">
-                                    <i class='fas fa-microscope'></i>
-                                {% else %}
-                                    <a>
-                                    <i class='fas fa-microscope' style="color:grey" title="Slide file not available"></i>
-                                {% endif %}
-                            </a>
-                            <br>
-                                {% if entry.file_exists %}
-                                    <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
-                                    <i class='fas fa-external-link-alt'></i>
-                                {% else %}
-                                    <a>
-                                    <i class="fas fa-external-link-alt" style="color:grey" title="Slide file not available"></i>
-                                {% endif %}
-                            </a>
-                        {% else %}
-                                {% if entry.file_exists %}
-                                    <a class="slide_view" href="#" search-string="" slidepath="{{ url_for('slide', path=entry.url_path) }}">
-                                    <i class='fas fa-microscope'></i>
-                                {% else %}
-                                    <a>
-                                    <i class='fas fa-microscope' style="color:grey" title="Slide file not available"></i>
-                                {% endif %}
-                            </a>
-                            <br>
-                                {% if entry.file_exists %}
-                                    <a href="{{ url_for('slide', path='full/'+entry.url_path) }}" target="_blank">
-                                    <i class='fas fa-external-link-alt'></i>
-                                {% else %}
-                                    <a>
-                                    <i class="fas fa-external-link-alt" style="color:grey" title="Slide file not available"></i>
-                                {% endif %}
-                            </a>
-                        {% endif %}
-
-                    </a>
-                </td>
-                <td>{{ entry.slide_number }} </td>
-                <td>{{ entry.genus }} </td>
-                <td>{{ entry.species }} </td>
-                <td>{{ entry.stain }} </td>
-                <td>{{ entry.accession_number }} </td>
-                <td>{{ entry.source }} </td>
-                <td>{{ entry.contributor }} </td>
-                <td>{{ entry.processing }} </td>
-                <td>{{ entry.comments }} </td>
-                <td>{{ entry.date_collected }} </td>
-                <td>{{ entry.date_received }} </td>
-                <td>{{ entry.date_sent_to_aperio }} </td>
-                <td>{{ entry.sample }} </td>
-                <td>{{ entry.infect }} </td>
-                <td>{{ entry.study}} </td>
-                <td>{{ entry.collection_site }} </td>
-                <td>{{ entry.histopathologic_description }} </td>
-
-                {% else %}
-                {{ entry.name }}
-                {% endif %}
-
-                {% if entry.children %}
-                <ul>
-                    {{ loop(entry.children) }}
-                </ul>
-                {% endif %}
-                </th>
-
-            </tr>
-            {% else %}
-            <li class="none">None</li>
-            {% endfor %}
-        </table>
+            <table border="1px" id="slideTable" class="table table-striped table-hover table-borderless"
+                   style="width:100%">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>View</th>
+                    <th scope="col">Slide Number</th>
+                    <th scope="col">Genus</th>
+                    <th scope="col">Species</th>
+                    <th scope="col">Source</th>
+                    <th scope="col">Contributor</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
     </div>
-</div>
     <script>
-			function liveSearch(value){
-				value = value.trim(); // remove any spaces around the text
-					$.ajax({
-						url: "search",
-						data: {searchText: value},
-						dataType: "json",
-						success: function(data){
-						$("#slideTable > tbody").html("");
-                        $.each(data, function(index, element) {
-                                    for (i = 0; i < element.length; i++) {
-                                        link_html = ""
-                                        if(element[i]["file_exists"]){
-                                            link_html = "<td><a class='slide_view' href='#' search-string='"+value+"' slidepath='/"+element[i]["filename"]+"'><i class='fas fa-microscope'></i></a>" +
-                                                    "<br><a href='/full/"+element[i]["filename"]+"' target='_blank'><i class='fas fa-external-link-alt'></i></a></td>"
-                                        }else{
-                                            link_html = "<td><a><i class='fas fa-microscope' style='color:grey' title='Slide file not available'></i></a>" +
-                                                    "<br><a><i class='fas fa-external-link-alt' style='color:grey' title='Slide file not available'></i></a></td>"
-                                        }
-                                        $("#slideTable tbody").append(
-                                              "<tr>" +
-                                                    link_html +
-                                                    "<td>"+element[i]["number"]+"</td>" +
-                                                    "<td>"+element[i]["genus"]+"</td>" +
-                                                    "<td>"+element[i]["species"]+"</td>" +
-                                                    "<td>"+element[i]["stain"]+"</td>" +
-                                                    "<td>"+element[i]["accession_number"]+"</td>" +
-                                                    "<td>"+element[i]["source"]+"</td>" +
-                                                    "<td>"+element[i]["contributor"]+"</td>" +
-                                                    "<td>"+element[i]["processing"]+"</td>" +
-                                                    "<td>"+element[i]["comments"]+"</td>" +
-                                                    "<td>"+element[i]["date_collected"]+"</td>" +
-                                                    "<td>"+element[i]["date_received"]+"</td>" +
-                                                    "<td>"+element[i]["date_sent_to_aperio"]+"</td>" +
-                                                    "<td>"+element[i]["sample"]+"</td>" +
-                                                    "<td>"+element[i]["infect"]+"</td>" +
-                                                    "<td>"+element[i]["study"]+"</td>" +
-                                                    "<td>"+element[i]["collection_site"]+"</td>" +
-                                                    "<td>"+element[i]["histopathologic_description"]+"</td>" +
-                                              "</tr>"
-                                        );
-
-                                    }
-                                });
-						}
-					});
-			}
-
-
-            function toggleColumnChoice() {
-              var x = document.getElementById("columnChoice");
-              if (x.style.display === "none") {
-                x.style.display = "block";
-              } else {
-                x.style.display = "none";
-              }
-            }
-
-            $(document).on("click", '.slide_view', function(event) {
-                var slidePath = $(this).attr("slidepath");
-                var searchString = $(this).attr("search-string");
-                $.ajax({
-                    url : slidePath,
-                    success: function(data){
-                        $('#content').html(data);
-                        if(searchString)
-                            $('#backButton').attr("href", "/slides?searchString="+searchString);
-                        else
-                            $('#backButton').attr("href", "/slides");
-                    }
-                });
-            });
-
-            document.addEventListener("hide-show-columns", function(e) {
-              var numCols = $("#slideTable").find('tr')[0].cells.length;
-              console.log(numCols);
-              var selectedColumns = new Set();
-              for (selectedColumn of jQuery(this).find("select.selectpicker").val()) {
-                  selectedColumns.add(selectedColumn);
-              }
-
-              var slideTable = document.getElementById("slideTable");
-              var selectedHeaders = new Object();
-              for(tableHeader of jQuery(slideTable).find("th")){
-                if(selectedColumns.has(tableHeader.innerText)){
-                  selectedHeaders[jQuery(tableHeader).index()] = tableHeader.innerText;
-                  jQuery(tableHeader).attr("class", "d-none");
-                }else{
-                  jQuery(tableHeader).removeAttr("class");
-                }
-              }
-              tableRows = jQuery(slideTable).find("tr")
-              for(tableRow of jQuery(tableRows)){
-                  for (var i = 0, keys = Object.keys(selectedHeaders), ii = keys.length; i < ii; i++) {
-                    tableElement = tableRow.cells[keys[i]];
-                    jQuery(tableElement).attr("class", "d-none");
-                  }
-                  for(var i=0; i < numCols; i++){
-                    if(!(i in selectedHeaders)){
-                      tableElement = tableRow.cells[i];
-                      jQuery(tableElement).removeAttr("class");
-                    }
-                  }
-              }
-            });
-
-            $(function() {
-                $('#columnChoice').on('hide.bs.dropdown', function () {
-                    var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
-                    document.dispatchEvent(event);
-                })
-            });
-
-            $( document ).ready(function() {
-                var event = new CustomEvent("hide-show-columns", { "detail": "Custom event to trigger hide/showing of table columns" });
-                document.dispatchEvent(event);
-            });
-		</script>
+      $(document).on("click", '.slide_view', function(event) {
+        var slidePath = $(this).attr("slidepath");
+        var searchString = $(this).attr("search-string");
+        $.ajax({
+          url : slidePath,
+          success: function(data){
+            $('#content').html(data);
+            if(searchString)
+              $('#backButton').attr("href", "/slides?searchString="+searchString);
+            else
+              $('#backButton').attr("href", "/slides");
+          }
+        });
+      });
+    </script>
 </body>
 </html>
