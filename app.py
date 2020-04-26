@@ -148,7 +148,7 @@ def slide(path):
 
     conn.close()
 
-    return render_template('slide-fullpage.html', slide_url=slide_url, properties=properties)
+    return render_template('slide-fullpage.html', slide_url=dzi_path, properties=properties)
 
 @app.route('/full/<path:path>')
 def slide_full(path):
