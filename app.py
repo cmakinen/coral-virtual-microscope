@@ -241,10 +241,5 @@ if __name__ == '__main__':
         if not k.startswith('_') and getattr(opts, k) is None:
             delattr(opts, k)
     app.config.from_object(opts)
-    # Set slide directory
-    try:
-        app.config['SLIDE_DIR'] = args[0]
-    except IndexError:
-        pass
 
     serve(app, host=opts.host, port=opts.port, threads=8)

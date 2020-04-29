@@ -39,8 +39,7 @@ div#images li {
 }
 div#view {
     position: absolute;
-    left: 16%;
-    width: 58%;
+    width: 74%;
     height: 98%;
     background-color: black;
     border: 1px solid #000;
@@ -74,26 +73,6 @@ div#properties dd {
 }
 </style>
 
-<div id="images">
-    <h1>View</h1>
-    <div class="current-slide">
-        <a class="load-slide" href="#" data-url="{{ slide_url }}"
-                data-mpp="{{ slide_mpp }}">Slide</a>
-    </div>
-    <h2>Associated images</h2>
-    {% if associated %}
-        <ul class="associated-images">
-            {% for name in associated|sort %}
-                <li><a class="load-slide" href="#"
-                        data-url="{{ associated[name] }}">
-                    {{ name }}
-                </a>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <span class="associated-images notice">None</span>
-    {% endif %}
-</div>
 <div id="view"></div>
 <div id="properties">
     <h1>Slide properties</h1>
