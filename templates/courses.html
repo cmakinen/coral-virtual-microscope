@@ -9,9 +9,9 @@
     <div id="content" class="pl-4 pl-md-5">
         {% include 'topbar.html' %}
         <h3 class="mb-4">Courses</h3>
-
-        <div class="row">
-            {% for key, value in courses_map.items() %}
+        <div class="container">
+            <div class="row">
+                {% for key, value in courses_map.items() %}
                 <div class="col-sm-6">
                     <div class="card mb-4">
                         <div class="card-body">
@@ -21,7 +21,8 @@
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
