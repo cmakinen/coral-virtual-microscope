@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>Upload Slide - Coral Virtual Microscope</title>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+
+    {% include 'sidebar.html' %}
+
+    <div id="content" class="pl-4 pl-md-5">
+        {% include 'topbar.html' %}
+        <div class="col">
+            <h3 class="mb-4">Upload slide</h3>
+        </div>
+        <div class="col">
+            Please upload your Aperio SVS file here. It will be uploaded and then processed into a DZI file. It will be made available after that.
+            It might take up to a few hours depending on the size of your slide file. You will be able to add metadata once the processing is completed.
+        </div>
+        <div class="col-6 mt-2">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input input-md" id="customFile" accept=".svs">
+                <label class="custom-file-label" for="customFile">Choose slide file to upload (*.svs)</label>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -17,9 +17,6 @@
         height: 98%;
         overflow: auto;
     }
-    div#properties-inner {
-        display: inline-block;
-    }
     div#properties dl {
         font-size: small;
         margin: 0;
@@ -36,21 +33,19 @@
         color: #494ca2; !important;
     }
 
+
 </style>
-<div id="wrapper" class="wrapper h-100">
-    <a class="btn mb-1" id="backButton" href="/slides"><i class="fas fa-arrow-circle-left fa-1x"></i> Back to List</a>
+<div id="wrapper" class="wrapper h-100 w-100">
     <div class="row h-100">
-        <div id="view" class="ml-4"></div>
+        <div id="view"></div>
         <div id="properties" class="ml-1">
             {% if properties %}
-            <div id="properties-inner">
-                <dl>
-                    {% for name in properties %}
-                    <dt>{{ name }}
-                    <dd>{{ properties[name] }}
-                        {% endfor %}
-                </dl>
-            </div>
+            <dl>
+                {% for name in properties %}
+                <dt>{{ name }}
+                <dd>{{ properties[name] }}
+                    {% endfor %}
+            </dl>
             {% else %}
             <span class="notice">None</span>
             {% endif %}
@@ -65,7 +60,7 @@
 $(document).ready(function() {
     var viewer = new OpenSeadragon({
         id: "view",
-        tileSources: "https://dziimages.blob.core.windows.net/coralvm/{{ slide_url }}",
+        tileSources: "{{ slide_base_url }}/{{ slide_url }}",
         prefixUrl: "{{ url_for('static', filename='images/') }}",
         showNavigator: true,
         showRotationControl: true,
@@ -100,5 +95,6 @@ $(document).ready(function() {
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
     });
 });
+
 
 </script>

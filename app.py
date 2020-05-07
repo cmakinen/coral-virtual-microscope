@@ -18,6 +18,7 @@
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
+import os
 import flask
 from flask import Flask, request, abort, make_response, render_template, url_for, redirect
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
@@ -28,15 +29,20 @@ from is_safe_url import is_safe_url
 
 from optparse import OptionParser
 import json
-import sqlite3
 from flask_wtf.csrf import CSRFProtect
-from waitress import serve
-
-SLIDE_DIR = '.'
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
+from urllib.parse import urlparse
 
 app = Flask(__name__)
-app.config.from_object(__name__)
-app.config["SECRET_KEY"] = "ITSASECRET"
+app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+from models import *
+
+
+print(os.environ)
 login_manager = LoginManager()
 login_manager.init_app(app)
 CSRFProtect(app)
@@ -82,6 +88,11 @@ def load_user(user_id):
 def protected():
     return make_response("Hello Protected World!")
 
+@app.route('/login', methods=["GET"])
+def login_get():
+    parsedUrl = urlparse(request.referrer)
+    return render_template('login.html', referer_path=parsedUrl.path)
+
 @app.route('/login', methods=['POST'])
 def login():
     # Here we use a class of some kind to represent and validate our
@@ -89,7 +100,6 @@ def login():
     # handle this for us, and we use a custom LoginForm to validate.
     form = LoginForm()
     if form.validate_on_submit():
-        print("login called2")
         # Login and validate the user.
         # user should be an instance of your `User` class
         user = load_user(request.form['email'])
@@ -101,7 +111,6 @@ def login():
         # See http://flask.pocoo.org/snippets/62/ for an example.
         if not is_safe_url(next, {"localhost"}):
             return flask.abort(400)
-
         return flask.redirect(next or flask.url_for('index'))
     return redirect(flask.request.environ["HTTP_REFERER"])
 
@@ -125,112 +134,176 @@ def index():
 
 @app.route('/courses')
 def courses():
-    return render_template('courses.html')
+    courses = Courses.query.all()
+    courses_map ={}
+    for course in courses:
+        courses_map[course.id] = course.prop_map()
+    return render_template('courses.html', courses_map=courses_map)
 
 @app.route('/course')
 def course():
-    return render_template('course.html')
+    id = request.args.get("id")
+    if not id:
+        return render_template('404.html', error_msg="The course you're looking for does not exist"), 404
+    try:
+        course = Courses.query.filter(Courses.id == id).one()
+        course_map = course.prop_map()
+
+        lessons = Lessons.query.filter(Lessons.course_id == id)
+        lessons_map ={}
+        for lesson in lessons:
+            lessons_map[lesson.id] = lesson.prop_map()
+    except:
+        print(f'Invalid course number requested: {id}')
+        return render_template('404.html', error_msg="The course you're looking for does not exist"), 404
+    return render_template('course.html', lessons_map=lessons_map, course_map=course_map)
+
+@app.route('/lesson')
+def lesson():
+    id = request.args.get("id")
+    if not id:
+        return render_template('404.html', error_msg="The lesson you're looking for does not exist"), 404
+    try:
+        lesson = Lessons.query.filter(Lessons.id == id).one()
+        lesson_map = lesson.prop_map()
+    except:
+        print(f'Invalid lesson number requested: {id}')
+        return render_template('404.html', error_msg="The lesson you're looking for does not exist"), 404
+
+    lesson_slides = LessonSlides.query.filter(LessonSlides.lesson_id == id)
+    lesson_slides_map ={}
+    for lesson_slide in lesson_slides:
+        slide = Slides.query.filter(Slides.id == lesson_slide.slide_id).one()
+        lesson_slide_prop_map = lesson_slide.prop_map()
+        lesson_slide_prop_map ["slide_filename"] = slide.filename
+        lesson_slides_map[lesson_slide.id] = lesson_slide_prop_map
+
+    return render_template('lesson.html', lesson_slides_map=lesson_slides_map, lesson_map=lesson_map)
 
 @app.route('/<path:path>')
 def slide(path):
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
-    conn = sqlite3.connect('all_slides.db')
-    c = conn.cursor()
-    c.execute("select * from slides where filename = ?", (path,))
-    records = c.fetchall()
-    properties = {}
-    for row in records:
-        i = 0
-        for key in c.description:
-            properties[key[0].title()] = row[i]
-            i = i + 1
+    try:
+        slide = Slides.query.filter(Slides.filename == path).one()
+        prop_map = slide.prop_map()
+    except:
+        print(f'No such slide exists: {path}')
+        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
 
-    conn.close()
-
-    return render_template('slide-fullpage.html', slide_url=dzi_path, properties=properties)
+    return render_template('slide-fullpage.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map)
 
 @app.route('/full/<path:path>')
 def slide_full(path):
-    print(path)
-
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
-    conn = sqlite3.connect('all_slides.db')
-    c = conn.cursor()
-    c.execute("select * from slides where filename = ?", (path,))
-    records = c.fetchall()
-    properties = {}
-    for row in records:
-        i = 0
-        for key in c.description:
-            properties[key[0].title()] = row[i]
-            i = i + 1
+    try:
+        slide = Slides.query.filter(Slides.filename == path).one()
+        prop_map = slide.prop_map()
+    except:
+        print(f'No such slide exists: {path}')
+        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
 
-    conn.close()
+    return render_template('slide-multipane.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map)
 
-    return render_template('slide-multipane.html', slide_url=dzi_path, properties=properties)
+@app.route('/edit/<path:path>')
+@login_required
+def slide_edit_get(path):
+    dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
+
+    textarea_fields = {"comments", "histopathologic_description", "attachment"}
+    fields_to_remove = {"id"}
+    try:
+        slide = Slides.query.filter(Slides.filename == path).one()
+        prop_map = slide.prop_map()
+        # for key, value in prop_map.items():
+        #     if(key in textarea_fields):
+        #         textarea_map[key] = value
+        #
+        for field_to_remove in fields_to_remove:
+            prop_map.pop(field_to_remove)
+
+    except:
+        print(f'No such slide exists: {path}')
+        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
+
+    return render_template('slide-multipane-edit.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path,
+                           properties=prop_map, svs_path=slide.filename, textarea_fields=textarea_fields)
+
+@app.route('/edit/<path:path>', methods =['POST'])
+@login_required
+def slide_edit(path):
+    dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
+
+    print(request.values)
+    ##query using filename
+
+    try:
+        slide = Slides.query.filter(Slides.filename == path).one()
+        prop_map = slide.prop_map()
+    except:
+        print(f'No such slide exists: {path}')
+        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
+
+    return render_template('slide-multipane-edit.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map, svs_path=slide.filename)
+
+@app.route('/upload')
+@login_required
+def upload_slide():
+    return render_template('upload.html')
+
+@app.route("/allslides")
+def allslides():
+    slides = Slides.query.all()
+    data = []
+    for slide in slides:
+        prop_map = slide.prop_map()
+        prop_map["view"] = prop_map["filename"]
+        data.append(prop_map)
+
+    return json.dumps({'data': data})
 
 @app.route("/search")
 def search():
     text = request.args.get("searchText") # get the text to search for
     if text is None:
         text = ""
-    conn = sqlite3.connect('all_slides.db')
-    c = conn.cursor()
-    qs = '%'+text+'%'
-    t = (qs,qs,qs,qs,qs,qs,qs,qs,qs,)
-    c.execute("""select * from slides where filename LIKE ? OR number LIKE ? OR genus LIKE ? OR species LIKE ?
-                 OR source LIKE ? OR contributor LIKE ? OR comments LIKE ? OR collection_site LIKE ? OR histopathologic_description LIKE ?"""
-              ,t)
 
-    records = c.fetchall()
+    searchText = "%"+text+"%"
+    print(searchText)
+    slides = Slides.query.filter(or_(Slides.filename.ilike(searchText),
+                                      Slides.number.ilike(searchText),
+                                      Slides.genus.ilike(searchText),
+                                      Slides.species.ilike(searchText),
+                                      Slides.source.ilike(searchText),
+                                      Slides.contributor.ilike(searchText),
+                                      Slides.comments.ilike(searchText),
+                                      Slides.collection_site.ilike(searchText),
+                                      Slides.histopathologic_description.ilike(searchText),
+                                      Slides.attachment.ilike(searchText)
+                                      )).all()
     data = []
-    for row in records:
-        i = 0
-        slide = {}
-        for key in c.description:
-            slide[key[0]] = row[i]
-            i = i + 1
-        # if path.exists(app.basedir + "/" + slide["filename"]):
-            slide["file_exists"] = True
-        # else:
-        #     slide["file_exists"] = False
-        slide["view"] = slide["filename"]
-        data.append(slide)
+    print(slides)
+    for slide in slides:
+        print(slide)
+        prop_map = slide.prop_map()
+        prop_map["view"] = prop_map["filename"]
+        data.append(prop_map)
 
-    conn.close()
-
-    # return as JSON
     return json.dumps({'data': data})
 
 if __name__ == '__main__':
     parser = OptionParser(usage='Usage: %prog [options] [slide-directory]')
-    parser.add_option('-B', '--ignore-bounds', dest='DEEPZOOM_LIMIT_BOUNDS',
-                default=True, action='store_false',
-                help='display entire scan area')
     parser.add_option('-c', '--config', metavar='FILE', dest='config',
                 help='config file')
     parser.add_option('-d', '--debug', dest='DEBUG', action='store_true',
                 help='run in debugging mode (insecure)')
-    parser.add_option('-e', '--overlap', metavar='PIXELS',
-                dest='DEEPZOOM_OVERLAP', type='int',
-                help='overlap of adjacent tiles [1]')
-    parser.add_option('-f', '--format', metavar='{jpeg|png}',
-                dest='DEEPZOOM_FORMAT',
-                help='image format for tiles [jpeg]')
     parser.add_option('-l', '--listen', metavar='ADDRESS', dest='host',
                 default='127.0.0.1',
                 help='address to listen on [127.0.0.1]')
     parser.add_option('-p', '--port', metavar='PORT', dest='port',
                 type='int', default=5000,
                 help='port to listen on [5000]')
-    parser.add_option('-Q', '--quality', metavar='QUALITY',
-                dest='DEEPZOOM_TILE_QUALITY', type='int',
-                help='JPEG compression quality [75]')
-    parser.add_option('-s', '--size', metavar='PIXELS',
-                dest='DEEPZOOM_TILE_SIZE', type='int',
-                help='tile size [254]')
 
     (opts, args) = parser.parse_args()
     # Load config file if specified
@@ -242,4 +315,4 @@ if __name__ == '__main__':
             delattr(opts, k)
     app.config.from_object(opts)
 
-    serve(app, host=opts.host, port=opts.port, threads=8)
+    app.run(host=opts.host, port=opts.port, threaded=True)

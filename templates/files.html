@@ -23,11 +23,6 @@
             color: #aaa;
         }
 
-        .columnPrefs > input {
-          font-size: 20px;
-        }
-
-
     </style>
 </head>
 <body>
@@ -43,6 +38,9 @@
                 <tr>
                     <th></th>
                     <th>View</th>
+                    {% if current_user.is_authenticated %}
+                    <th>Edit</th>
+                    {% endif %}
                     <th scope="col">Slide Number</th>
                     <th scope="col">Genus</th>
                     <th scope="col">Species</th>

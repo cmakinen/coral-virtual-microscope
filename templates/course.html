@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Coral Histopathology Course</title>
+    <title>{{ course_map.name }} course</title>
 </head>
 <body>
 <div class="wrapper d-flex align-items-stretch">
@@ -8,35 +8,24 @@
 
     <div id="content" class="pl-4 pl-md-5">
         {% include 'topbar.html' %}
-        <h2 class="mb-4">Basic Coral Histology</h2>
+        <h3 class="mb-4"><mark>{{ course_map.name }} course</mark></h3>
         <div class="row">
+            {% if not lessons_map %}
             <div class="col-sm-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Cell types in Corals</h5>
-                        <p class="card-text">We will look at identifying epithelium, nervous, connective and muscle tissues</p>
-                        <a href="/course" class="btn btn-primary">Click Here</a>
+                <h3 class="mb-4">No lessons in this course</h3>
+            </div>
+            {% endif %}
+            {% for key, value in lessons_map.items() %}
+                <div class="col-sm-6">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ value.name }}</h5>
+                            <p class="card-text">{{ value.description }}</p>
+                            <a href="/lesson?id={{ key }}" class="btn btn-primary">Click Here</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Identifying zooxanthellae</h5>
-                        <p class="card-text">We will identify symbiotic zooxanthellae</p>
-                        <a href="/course" class="btn btn-primary">Click Here</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Identifying bacterial and fungal presence</h5>
-                        <p class="card-text">Finding signs of fungi or bacteria</p>
-                        <a href="/course" class="btn btn-primary">Click Here</a>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </div>

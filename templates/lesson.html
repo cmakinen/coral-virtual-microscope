@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title>{{ lesson_map.name }} lesson</title>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+    {% include 'sidebar.html' %}
+
+    <div id="content" class="pl-4 pl-md-5">
+        {% include 'topbar.html' %}
+        <h3 class="mb-4"><mark>{{ lesson_map.name }} lesson</mark></h3>
+        {% if not lesson_slides_map %}
+        <div class="col-sm-6">
+            <h3 class="mb-4">No slides in this course</h3>
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col lesson-slides">
+                <table class="table table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">View</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for key, value in lesson_slides_map.items() %}
+                    <tr>
+                        <td>
+                            <a slidepath="/{{ value.slide_filename }}" href="#" class="btn btn-primary slide_view">Show</a>
+                        </td>
+                        <td>{{ value.description if value.description }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col border" id="slide-content" style="display:none"></div>
+        </div>
+    </div>
+</div>
+<script>
+            $(document).on("click", '.slide_view', function(event) {
+                var slidePath = $(this).attr("slidepath");
+                if($(this).text() == "Show"){
+                  $('.slide_view').each(function(i, obj) {
+                        $(obj).text("Show");
+                   });
+                  $(this).text("Hide");
+                  $("#slide-content").show();
+                  $(".col.lesson-slides").attr("class","col-sm-4 lesson-slides");
+
+                } else{
+                  $(this).text("Show");
+                  $("#slide-content").hide();
+                  $(".col-sm-4.lesson-slides").attr("class","col lesson-slides");
+                }
+                $.ajax({
+                    url : slidePath,
+                    success: function(data){
+                        $("#slide-content").html(data);
+                    }
+                });
+            });
+</script>
+</body>
+</html>

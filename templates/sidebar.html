@@ -52,7 +52,7 @@
                  "ordering": false,
                  "responsive": true,
                  "ajax": {
-                    "url": "search",
+                    "url": "allslides",
                     "type": "get"
                  },
                 "columns": [
@@ -72,6 +72,20 @@
                         return newdata;
                       }
                     },
+
+                    {% if current_user.is_authenticated %}
+                    { "data": "view",
+                      "render": function(data, type, row, meta){
+                        newdata = ""
+                        if(type === 'display'){
+                          newdata += `<a href="edit/${data}" target="_blank">`;
+                          newdata += '<i class="fas fa-edit"></i>';
+                        }
+                        return newdata;
+                      }
+                    },
+                    {% endif %}
+
                     { "data": "number" },
                     { "data": "genus" },
                     { "data": "species" },
@@ -108,7 +122,6 @@
 
             /* Formatting function for row details - modify as you need */
             function format ( d ) {
-            console.log(d);
                 // `d` is the original data object for the row
                 return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
                     '<tr>'+
@@ -187,7 +200,7 @@
             </li>
             {% if current_user.is_authenticated %}
             <li>
-                <a href="#"><span class="fa fa-briefcase mr-3"></span> Upload Slide</a>
+                <a href="/upload"><span class="fa fa-briefcase mr-3"></span> Upload Slide</a>
             </li>
             {% endif %}
             <li>

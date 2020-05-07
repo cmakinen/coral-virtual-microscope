@@ -1,0 +1,37 @@
+<html>
+<body>
+<script type="text/javascript" src="{{ url_for('static', filename='openseadragon.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='openseadragon-scalebar.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='openseadragon-annotations.js') }}"></script>
+
+<div id="view" class="ml-4"></div>
+
+    <script type="text/javascript">
+            OpenSeadragon({
+                id:            "view",
+                prefixUrl: "{{ url_for('static', filename='images/') }}",
+                tileSources:   "https://dziimages.blob.core.windows.net/coralvm/Platygyra.dzi",
+                showNavigator: true,
+                showRotationControl: true,
+                animationTime: 0.5,
+                blendTime: 0.1,
+                constrainDuringPan: true,
+                maxZoomPixelRatio: 2,
+                minZoomLevel: 1,
+                visibilityRatio: 1,
+                zoomPerScroll: 2,
+                timeout: 120000
+            });
+            viewer.initializeAnnotations();
+
+            viewer.addHandler("open", function() {
+                // To improve load times, ignore the lowest-resolution Deep Zoom
+                // levels.  This is a hack: we can't configure the minLevel via
+                // OpenSeadragon configuration options when the viewer is created
+                // from DZI XML.
+                viewer.source.minLevel = 8;
+            });
+
+        </script>
+</body>
+</html>

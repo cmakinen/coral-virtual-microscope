@@ -1,8 +1,15 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Slide Viewer</title>
+<title>Slide Editor</title>
 <meta name="viewport" content="user-scalable=no">
-<link rel="stylesheet" href="../static/css/style.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.css"
+      crossorigin="anonymous">
+<link rel="stylesheet" href="/static/css/style.css">
+<script src="https://kit.fontawesome.com/f9399c1fb9.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <style type="text/css">
 html {
     overflow: hidden;
@@ -38,7 +45,7 @@ div#images li {
 }
 div#view {
     position: absolute;
-    width: 74%;
+    width: 50%;
     height: 98%;
     background-color: black;
     border: 1px solid #000;
@@ -50,16 +57,13 @@ div#view.fullpage {
 }
 div#properties {
     position: absolute;
-    left: 75%;
-    width: 24.5%;
+    left: 51%;
+    width: 50%;
     height: 98%;
     overflow: auto;
 }
-div#properties-inner {
-    display: inline-block;
-}
 div#properties dl {
-    font-size: small;
+    font-size: medium;
     margin: 0;
 }
 div#properties dt {
@@ -75,19 +79,39 @@ div#properties dd {
 
 <div id="view"></div>
 <div id="properties">
-    <h1>Slide properties</h1>
-    {% if properties %}
-    <dl>
-        {% for name in properties %}
-        <dt>{{ name }}
-        <dd>{{ properties[name] }}
-            {% endfor %}
-    </dl>
-    {% else %}
-    <span class="notice">None</span>
-    {% endif %}
+    <form action="/edit/{{ svs_path }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <div class="container">
+            <div class="col">
+                {% if properties %}
+                <div>
+                    <dl>
+                        {% for name in properties %}
+                        <div class="form-group row">
+                            <label for="{{ name }}" class="col-4 col-form-label">{{ name.capitalize() }}</label>
+                            <div class="col">
+                                {% if name not in textarea_fields %}
+                                  <input name="{{ name }}" id="{{ name }}" value="{{ properties[name] }}" class="form-control" type="text">
+                                {%else%}
+                                  <textarea class="form-control" name="{{ name }}" id="{{ name }}" value="{{ properties[name] }}" rows="3"></textarea>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </dl>
+                </div>
+                {% else %}
+                <span class="notice">None</span>
+                {% endif %}
+                <button type="submit" class="btn btn-primary mt-2">Save Changes</button>
+            </div>
+        </div>
+    </form>
 </div>
 
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
 <script type="text/javascript" src="../static/openseadragon.js"></script>
 <script type="text/javascript" src="../static/openseadragon-scalebar.js"></script>
