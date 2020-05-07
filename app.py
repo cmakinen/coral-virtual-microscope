@@ -184,9 +184,14 @@ def lesson():
 def slide(path):
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
+    fields_to_remove = {"id"}
+
     try:
         slide = Slides.query.filter(Slides.filename == path).one()
         prop_map = slide.prop_map()
+        for field_to_remove in fields_to_remove:
+            prop_map.pop(field_to_remove)
+
     except:
         print(f'No such slide exists: {path}')
         return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
@@ -196,10 +201,14 @@ def slide(path):
 @app.route('/full/<path:path>')
 def slide_full(path):
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
+    fields_to_remove = {"id"}
 
     try:
         slide = Slides.query.filter(Slides.filename == path).one()
         prop_map = slide.prop_map()
+        for field_to_remove in fields_to_remove:
+            prop_map.pop(field_to_remove)
+
     except:
         print(f'No such slide exists: {path}')
         return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
@@ -216,10 +225,6 @@ def slide_edit_get(path):
     try:
         slide = Slides.query.filter(Slides.filename == path).one()
         prop_map = slide.prop_map()
-        # for key, value in prop_map.items():
-        #     if(key in textarea_fields):
-        #         textarea_map[key] = value
-        #
         for field_to_remove in fields_to_remove:
             prop_map.pop(field_to_remove)
 
@@ -236,11 +241,16 @@ def slide_edit(path):
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
     print(request.values)
-    ##query using filename
+    ##query using filename and save
+
+    fields_to_remove = {"id"}
 
     try:
         slide = Slides.query.filter(Slides.filename == path).one()
         prop_map = slide.prop_map()
+        for field_to_remove in fields_to_remove:
+            prop_map.pop(field_to_remove)
+
     except:
         print(f'No such slide exists: {path}')
         return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
