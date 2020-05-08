@@ -53,7 +53,7 @@ Register by going to https://signup.heroku.com and login to the account.
 
 An application can be created either on the command line or on the Heroku portal after logging in. The following command needs to be run if it is preferred to create it on the command line.
 
-heroku create <application-name>
+`heroku create <application-name>`
 
 Complete instructions on how to create and run a new python application on Heroku can be found at https://devcenter.heroku.com/articles/getting-started-with-python?singlepage=true. 
 
@@ -70,17 +70,17 @@ Creating and attaching a database to an application can be done on the Heroku po
 
 The database is initially empty and will need to be initialized. It can be initialized using the following command.
 
-### heroku run python manage.py db upgrade
+`heroku run python manage.py db upgrade`
 
 The above should create the database but the database will be empty. The tables can be initialized with initial histoslide data using the following command.
 
-### heroku run python crud.py 
+`heroku run python crud.py `
 
 Set histoslide remote URL path as environment variable
 
 The following command lets the application running on Heroku know where to find the DZI histoslide images.
 
-### heroku config:set SLIDE_BASE_URL=<dziimage_url>
+`heroku config:set SLIDE_BASE_URL=<dziimage_url>`
 
 Any changes to the application on Github will be now be automatically deployed or it can be manually deployed from the Heroku portal. Instructions on deploying it can be found at https://devcenter.heroku.com/articles/github-integration.
 
