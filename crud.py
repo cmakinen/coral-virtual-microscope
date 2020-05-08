@@ -67,17 +67,12 @@ def loadpgsql():
 
             properties[key[0].title()] = row[i]
             i = i + 1
-        attrs = vars(slide)
         db.session.add(slide)
         db.session.commit()
         db.session.flush()
-        # print(db.session.add(slide))
-        # print(attrs)
     conn.close()
     print(Slides.query.all())
 
 db.session.close()
-# s.commit()
-# s.close()
 
 loadpgsql()

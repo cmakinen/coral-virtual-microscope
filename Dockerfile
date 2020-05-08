@@ -15,6 +15,7 @@ RUN mkdir ./coral-vm-app/static
 RUN mkdir ./coral-vm-app/templates
 ADD static/ ./coral-vm-app/static
 ADD templates/ ./coral-vm-app/templates
+ADD migrations/ ./coral-vm-app/migrations
 
 WORKDIR ./coral-vm-app/
 CMD ["python3", "app.py", "-p", "80", "-l", "0.0.0.0"]
