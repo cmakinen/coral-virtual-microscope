@@ -34,6 +34,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from urllib.parse import urlparse
 
+from datetime import datetime, timedelta
+
+from azure.storage.blob import BlockBlobService, ContainerPermissions, ContentSettings
+
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -260,7 +264,17 @@ def slide_edit(path):
 @app.route('/upload')
 @login_required
 def upload_slide():
-    return render_template('upload.html')
+    accountName = app.config["AZURE_STORAGE_ACCOUNT_NAME"]
+    containerName = app.config["AZURE_STORAGE_ACCOUNT_SVSUPLOAD_CONTAINER_NAME"]
+    accountKey = app.config["AZURE_STORAGE_ACCOUNT_KEY"]
+    blob_service = BlockBlobService(account_name=accountName, account_key=accountKey)
+
+    permission = ContainerPermissions(write=True)
+    sasToken = blob_service.generate_container_shared_access_signature(container_name=containerName, permission=permission,
+                                                             protocol='https', start=datetime.now(), expiry=datetime.now() + timedelta(hours=2))
+
+    container_url = f'https://{accountName}.blob.core.windows.net/{containerName}?{sasToken}'
+    return render_template('upload.html', container_url=container_url)
 
 @app.route("/allslides")
 def allslides():

@@ -9,20 +9,107 @@
 
     <div id="content" class="pl-4 pl-md-5">
         {% include 'topbar.html' %}
-        <div class="col">
-            <h3 class="mb-4">Upload slide</h3>
-        </div>
-        <div class="col">
-            Please upload your Aperio SVS file here. It will be uploaded and then processed into a DZI file. It will be made available after that.
-            It might take up to a few hours depending on the size of your slide file. You will be able to add metadata once the processing is completed.
-        </div>
-        <div class="col-6 mt-2">
-            <div class="custom-file">
-                <input type="file" class="custom-file-input input-md" id="customFile" accept=".svs">
-                <label class="custom-file-label" for="customFile">Choose slide file to upload (*.svs)</label>
+        <div class="container">
+            <div class="row">
+                <div class="col-6 mt-2">
+                    <h3 class="mb-4">Upload slide</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Please upload your Aperio SVS files here. They will be uploaded and then be processed into DZI
+                    format. They
+                    will be made available after that.
+                    It might take up to a few hours depending on the size of your slide files. You will be able to add
+                    metadata
+                    once the processing is completed.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 mt-2">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input input-md" id="file-input" accept=".svs" multiple>
+                        <label class="custom-file-label" for="file-input">Choose slides to upload (*.svs)</label>
+                    </div>
+                    <div class="mt-2">
+                        <button id="upload-button" type="button" class="btn btn-primary">Upload</button>
+                    </div>
+                </div>
+                <div class="col-6 mt-2">
+                    <div id="upload-status-area">
+                        <table id="upload-list" class="table" style="display:none">
+                            <thead>
+                            <tr>
+                                <th scope="col">Filename</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<script src="/static/js/azure-storage-blob.min.js" charset="utf-8"></script>
+<script>
+const uploadButton = document.getElementById("upload-button");
+const uploadStatusArea = document.getElementById("upload-status-area");
+const fileInput = document.getElementById("file-input");
+
+const containerURL = new azblob.ContainerURL("{{ container_url | safe }}",
+    azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
+
+const uploadFiles = async () => {
+    try {
+        const promises = [];
+         for (const file of fileInput.files) {
+          console.log("Uploading file: " + file.name);
+          const blockBlobURL = azblob.BlockBlobURL.fromContainerURL(containerURL, file.name);
+          const fileSize = file.size;
+          const fileNameId = file.name.substring(0, file.name.length-4).replace(/\s/g,'');
+          const uploadProgress = document.getElementById("upload-progress-"+fileNameId);
+          await azblob.uploadBrowserDataToBlockBlob(azblob.Aborter.none, file, blockBlobURL, {
+            blockSize: 4 * 1024 * 1024, // 4MB block size
+            parallelism: 4, // 20 concurrency
+            progress: ev => {
+              percentComplete = Math.round((ev.loadedBytes/fileSize)*100);
+              uploadProgress.innerHTML = percentComplete + "%";
+              uploadProgress.setAttribute("style", `width:${percentComplete}%`);
+            }
+          });
+          console.log("Uploaded file: " + file.name);
+          // Send request to server to add slide to database
+          //
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+fileInput.addEventListener("change", () => {
+        $("#upload-list tr td").remove();
+        $("#upload-list").show();
+        for (const file of fileInput.files) {
+            const fileNameId = file.name.substring(0, file.name.length-4).replace(/\s/g,'');
+            markup = `<tr>
+                        <td>${file.name}</td>
+                        <td>
+                          <div class='progress'>
+                            <div id='upload-progress-${fileNameId}' class='progress-bar' style='width:0%' aria-valuemin='0' aria-valuemax='100'>0%</div>
+                          </div>
+                        </td>
+                      </tr>`;
+                tableBody = $("table tbody");
+                tableBody.append(markup);
+        }
+});
+
+uploadButton.addEventListener("click", uploadFiles);
+
+</script>
 </body>
 </html>
