@@ -36,7 +36,8 @@ from urllib.parse import urlparse
 
 from datetime import datetime, timedelta
 
-from azure.storage.blob import BlockBlobService, ContainerPermissions, ContentSettings
+from azure.storage.blob.models import ContainerPermissions, ContentSettings
+from azure.storage.blob.blockblobservice import BlockBlobService
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
