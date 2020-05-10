@@ -79,7 +79,7 @@ div#properties dd {
     {% if properties %}
     <dl>
         {% for name in properties %}
-        <dt>{{ name }}
+        <dt>{{ name.capitalize() }}
         <dd>{{ properties[name] }}
             {% endfor %}
     </dl>
