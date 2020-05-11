@@ -34,7 +34,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from urllib.parse import urlparse
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from azure.storage.blob.models import ContainerPermissions, ContentSettings
 from azure.storage.blob.blockblobservice import BlockBlobService
@@ -271,9 +271,11 @@ def upload_slide():
     blob_service = BlockBlobService(account_name=accountName, account_key=accountKey)
 
     permission = ContainerPermissions(write=True)
-    sasToken = blob_service.generate_container_shared_access_signature(container_name=containerName, permission=permission,
-                                                             protocol='https', start=datetime.now(), expiry=datetime.now() + timedelta(hours=2))
 
+    now = datetime.now(timezone.utc)
+    expiry = now + timedelta(hours=2)
+    sasToken = blob_service.generate_container_shared_access_signature(container_name=containerName, permission=permission,
+                                                             protocol='https', start=now, expiry=expiry)
     container_url = f'https://{accountName}.blob.core.windows.net/{containerName}?{sasToken}'
     return render_template('upload.html', container_url=container_url)
 
