@@ -96,7 +96,7 @@ def protected():
 @app.route('/login', methods=["GET"])
 def login_get():
     parsedUrl = urlparse(request.referrer)
-    return render_template('login.html', referer_path=parsedUrl.path)
+    return render_template('nav/login.html', referer_path=parsedUrl.path)
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -127,7 +127,7 @@ def logout():
 
 @app.route('/slides')
 def slides():
-    return render_template('files.html')
+    return render_template('slide/files.html')
 
 @app.route('/home')
 def home():
@@ -143,13 +143,13 @@ def courses():
     courses_map ={}
     for course in courses:
         courses_map[course.id] = course.prop_map()
-    return render_template('courses.html', courses_map=courses_map)
+    return render_template('course/courses.html', courses_map=courses_map)
 
 @app.route('/course')
 def course():
     id = request.args.get("id")
     if not id:
-        return render_template('404.html', error_msg="The course you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The course you're looking for does not exist"), 404
     try:
         course = Courses.query.filter(Courses.id == id).one()
         course_map = course.prop_map()
@@ -160,20 +160,20 @@ def course():
             lessons_map[lesson.id] = lesson.prop_map()
     except:
         print(f'Invalid course number requested: {id}')
-        return render_template('404.html', error_msg="The course you're looking for does not exist"), 404
-    return render_template('course.html', lessons_map=lessons_map, course_map=course_map)
+        return render_template('nav/404.html', error_msg="The course you're looking for does not exist"), 404
+    return render_template('course/course.html', lessons_map=lessons_map, course_map=course_map)
 
 @app.route('/lesson')
 def lesson():
     id = request.args.get("id")
     if not id:
-        return render_template('404.html', error_msg="The lesson you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The lesson you're looking for does not exist"), 404
     try:
         lesson = Lessons.query.filter(Lessons.id == id).one()
         lesson_map = lesson.prop_map()
     except:
         print(f'Invalid lesson number requested: {id}')
-        return render_template('404.html', error_msg="The lesson you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The lesson you're looking for does not exist"), 404
 
     lesson_slides = LessonSlides.query.filter(LessonSlides.lesson_id == id)
     lesson_slides_map ={}
@@ -183,7 +183,7 @@ def lesson():
         lesson_slide_prop_map ["slide_filename"] = slide.filename
         lesson_slides_map[lesson_slide.id] = lesson_slide_prop_map
 
-    return render_template('lesson.html', lesson_slides_map=lesson_slides_map, lesson_map=lesson_map)
+    return render_template('course/lesson.html', lesson_slides_map=lesson_slides_map, lesson_map=lesson_map)
 
 @app.route('/<path:path>')
 def slide(path):
@@ -199,9 +199,9 @@ def slide(path):
 
     except:
         print(f'No such slide exists: {path}')
-        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The slide you're looking for does not exist"), 404
 
-    return render_template('slide-fullpage.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map)
+    return render_template('slide/slide-fullpage.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map)
 
 @app.route('/full/<path:path>')
 def slide_full(path):
@@ -216,9 +216,9 @@ def slide_full(path):
 
     except:
         print(f'No such slide exists: {path}')
-        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The slide you're looking for does not exist"), 404
 
-    return render_template('slide-multipane.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map)
+    return render_template('slide/slide-multipane.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map)
 
 @app.route('/edit/<path:path>')
 @login_required
@@ -227,6 +227,7 @@ def slide_edit_get(path):
 
     textarea_fields = {"comments", "histopathologic_description", "attachment"}
     fields_to_remove = {"id"}
+    disabled_fields= {"filename"}
     try:
         slide = Slides.query.filter(Slides.filename == path).one()
         prop_map = slide.prop_map()
@@ -235,36 +236,48 @@ def slide_edit_get(path):
 
     except:
         print(f'No such slide exists: {path}')
-        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The slide you're looking for does not exist"), 404
 
-    return render_template('slide-multipane-edit.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path,
-                           properties=prop_map, svs_path=slide.filename, textarea_fields=textarea_fields)
+    return render_template('slide/slide-multipane-edit.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path,
+                           properties=prop_map, svs_path=slide.filename,
+                           textarea_fields=textarea_fields, disabled_fields=disabled_fields)
 
 @app.route('/edit/<path:path>', methods =['POST'])
 @login_required
 def slide_edit(path):
     dzi_path = path[:-3] + 'dzi' if path.endswith('svs') else path
 
-    print(request.values)
-    ##query using filename and save
+    filename = request.values.get("filename")
+    if filename is None:
+        return render_template('nav/404.html', error_msg="The slide you're looking for does not exist"), 404
 
+    textarea_fields = {"comments", "histopathologic_description", "attachment"}
     fields_to_remove = {"id"}
+    disabled_fields= {"filename"}
 
     try:
-        slide = Slides.query.filter(Slides.filename == path).one()
+        slide = Slides.query.filter(Slides.filename == filename).one()
+        for key, value in request.form.to_dict().items():
+            if key in slide.prop_map().keys():
+                setattr(slide, key, value)
+        db.session.commit()
         prop_map = slide.prop_map()
         for field_to_remove in fields_to_remove:
             prop_map.pop(field_to_remove)
 
-    except:
+    except Exception as e:
+        print(e)
         print(f'No such slide exists: {path}')
-        return render_template('404.html', error_msg="The slide you're looking for does not exist"), 404
+        return render_template('nav/404.html', error_msg="The slide you're looking for does not exist"), 404
 
-    return render_template('slide-multipane-edit.html', slide_base_url=app.config["SLIDE_BASE_URL"], slide_url=dzi_path, properties=prop_map, svs_path=slide.filename)
+    return render_template('slide/slide-multipane-edit.html', slide_base_url=app.config["SLIDE_BASE_URL"],
+                            slide_url=dzi_path, properties=prop_map, svs_path=slide.filename,
+                            textarea_fields=textarea_fields, disabled_fields=disabled_fields)
 
 @app.route('/upload')
 @login_required
 def upload_slide():
+    # TODO: If this config is not present, disable upload instead of failing to load
     accountName = app.config["AZURE_STORAGE_ACCOUNT_NAME"]
     containerName = app.config["AZURE_STORAGE_ACCOUNT_SVSUPLOAD_CONTAINER_NAME"]
     accountKey = app.config["AZURE_STORAGE_ACCOUNT_KEY"]
@@ -277,7 +290,7 @@ def upload_slide():
     sasToken = blob_service.generate_container_shared_access_signature(container_name=containerName, permission=permission,
                                                              protocol='https', start=now, expiry=expiry)
     container_url = f'https://{accountName}.blob.core.windows.net/{containerName}?{sasToken}'
-    return render_template('upload.html', container_url=container_url)
+    return render_template('slide/upload.html', container_url=container_url)
 
 @app.route("/allslides")
 def allslides():

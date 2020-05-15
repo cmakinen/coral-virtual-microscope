@@ -41,9 +41,9 @@
             var table = $('#slideTable').DataTable( {
                  "paging": true,
                  "searching": true,
-                 "stateSave": true,
+                 "stateSave": false,
                  "processing":true,
-                 "ordering": false,
+                 "ordering": true,
                  "responsive": true,
                  "ajax": {
                     "url": "allslides",
@@ -56,7 +56,9 @@
                         "data":           null,
                         "defaultContent": ''
                     },
-                    { "data": "view",
+                    {
+                      "data": "view",
+                      "orderable": false,
                       "render": function(data, type, row, meta){
                         newdata = ""
                         if(type === 'display'){
@@ -68,7 +70,9 @@
                     },
 
                     {% if current_user.is_authenticated %}
-                    { "data": "view",
+                    {
+                      "data": "edit",
+                      "orderable": false,
                       "render": function(data, type, row, meta){
                         newdata = ""
                         if(type === 'display'){
@@ -94,7 +98,11 @@
                     { "data": "histopathologic_description", "visible": false },
                     { "data": "attachment", "visible": false }
                 ],
-                "order": [[1, 'asc']]
+                {% if current_user.is_authenticated %}
+                "order": [[7, 'asc']]
+                {% else %}
+                "order": [[6, 'asc']]
+                {% endif %}
             } );
 
             // Add event listener for opening and closing details

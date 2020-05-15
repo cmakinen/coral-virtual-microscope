@@ -88,7 +88,11 @@ div#properties dd {
                             <label for="{{ name }}" class="col-4 col-form-label">{{ name.capitalize() }}</label>
                             <div class="col">
                                 {% if name not in textarea_fields %}
-                                  <input name="{{ name }}" id="{{ name }}" value="{{ properties[name] }}" class="form-control" type="text">
+                                    {% if name in disabled_fields %}
+                                    <input name="{{ name }}" id="{{ name }}" value="{{ properties[name] }}" class="form-control" type="text" readonly>
+                                    {%else%}
+                                    <input name="{{ name }}" id="{{ name }}" value="{{ properties[name] }}" class="form-control" type="text">
+                                    {% endif %}
                                 {%else%}
                                   <textarea class="form-control" name="{{ name }}" id="{{ name }}" value="{{ properties[name] }}" rows="3"></textarea>
                                 {% endif %}
