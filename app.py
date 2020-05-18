@@ -294,11 +294,12 @@ def upload_slide():
 
 @app.route("/allslides")
 def allslides():
-    slides = Slides.query.all()
+    slides = Slides.query.order_by(Slides.contributor).all()
     data = []
     for slide in slides:
         prop_map = slide.prop_map()
         prop_map["view"] = prop_map["filename"]
+        prop_map["edit"] = prop_map["filename"]
         data.append(prop_map)
 
     return json.dumps({'data': data})

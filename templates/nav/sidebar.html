@@ -35,6 +35,24 @@
             }
         } );
 
+        jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+            "non-empty-string-asc": function (str1, str2) {
+                if(str1 == "")
+                    return 1;
+                if(str2 == "")
+                    return -1;
+                return ((str1 < str2) ? -1 : ((str1 > str2) ? 1 : 0));
+            },
+
+            "non-empty-string-desc": function (str1, str2) {
+                if(str1 == "")
+                    return 1;
+                if(str2 == "")
+                    return -1;
+                return ((str1 < str2) ? 1 : ((str1 > str2) ? -1 : 0));
+            }
+        } );
+
         $( document ).ready(function() {
             $.noConflict();
 
@@ -49,6 +67,13 @@
                     "url": "allslides",
                     "type": "get"
                  },
+                columnDefs: [
+                    {% if current_user.is_authenticated %}
+                       {type: 'non-empty-string', targets: 7}
+                    {% else %}
+                       {type: 'non-empty-string', targets: 6}
+                    {% endif %}
+                    ],
                 "columns": [
                     {
                         "className":      'details-control',
@@ -99,9 +124,9 @@
                     { "data": "attachment", "visible": false }
                 ],
                 {% if current_user.is_authenticated %}
-                "order": [[7, 'asc']]
+                "order": [[ 7, "asc" ]]
                 {% else %}
-                "order": [[6, 'asc']]
+                "order": [[ 6, "asc" ]]
                 {% endif %}
             } );
 
