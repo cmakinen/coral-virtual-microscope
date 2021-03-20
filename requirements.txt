@@ -22,7 +22,7 @@ idna==2.9
 is-safe-url==1.0
 isodate==0.6.0
 itsdangerous==1.1.0
-Jinja2==2.11.1
+Jinja2==2.11.3
 Mako==1.1.2
 MarkupSafe==1.1.1
 msrest==0.6.13
