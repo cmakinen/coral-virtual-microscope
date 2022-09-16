@@ -23,7 +23,7 @@ is-safe-url==1.0
 isodate==0.6.0
 itsdangerous==1.1.0
 Jinja2==2.11.1
-Mako==1.1.2
+Mako==1.2.2
 MarkupSafe==1.1.1
 msrest==0.6.13
 oauthlib==3.1.0
